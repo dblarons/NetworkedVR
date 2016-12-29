@@ -1,5 +1,9 @@
 # Networked VR Project
 
+## Papers
+
+Papers, overviews, and lists are in the `reports` directory.
+
 ## Report Notes
 
 - [ ] State of the art report
