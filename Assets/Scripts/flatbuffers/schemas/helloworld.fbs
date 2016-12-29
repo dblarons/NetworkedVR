@@ -1,0 +1,14 @@
+namespace HW;
+
+struct Vec3 {
+  x:float;
+  y:float;
+  z:float;
+}
+
+table Action {
+  name:string;
+  position:Vec3;
+}
+
+root_type Action;
