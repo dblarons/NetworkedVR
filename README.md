@@ -2,7 +2,11 @@
 
 ## Papers
 
-Papers, overviews, and lists are in the `reports` directory.
+Papers, overviews, and lists are in the [`reports`](reports) directory.
+
+## Code
+
+Code is in the [`Assets/Scripts`](Assets/Scripts) directory. This is a Unity naming convention.
 
 ## Report Notes
 
