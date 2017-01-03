@@ -10,15 +10,15 @@ public class HelloWorld : MonoBehaviour {
     RequestSocket client;
     FlatBufferBuilder builder;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         server = new ResponseSocket("@tcp://localhost:5556"); // bind
         client = new RequestSocket(">tcp://localhost:5556"); // connect
         builder = new FlatBufferBuilder(1024);
-	}
+    }
 
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update () {
         {
             var name = builder.CreateString("my action");
             var position = Vec3.CreateVec3(builder, 1.0f, 2.0f, 3.0f);
@@ -55,5 +55,5 @@ public class HelloWorld : MonoBehaviour {
             var m2 = client.ReceiveFrameString();
             Debug.Log("From Server: " + m2);
         }
-	}
+    }
 }
