@@ -12,8 +12,16 @@ Code is in the [`Assets/Scripts`](Assets/Scripts) directory. This is a Unity nam
 
 - [ ] State of the art report
   - [ ] Send Dr. Dubey an initial list of papers that I have identified
-    -  Those will be my initial survey
+    - Those will be my initial survey
   - [ ] Why is my implementation different than others?
+    - Optimize for sending accurate player joint movements.
+      - Do a comparison between treating player as a standard object which has
+        updates and player as optimized object so that other players appear to
+        be smoother with lower network overhead
+      - Explore techniques for increasing the fidelity of player movements
+      - Bodypart fidelity is becoming more important
+        - See: http://hi5vrglove.com and
+        https://neuronmocap.com/products/perception_neuron
   - [ ] Describing and learning a new technique
   - [ ] Going beyond existing and do something new
   - [ ] What is innovative?
