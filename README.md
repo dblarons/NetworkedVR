@@ -14,14 +14,22 @@ Code is in the [`Assets/Scripts`](Assets/Scripts) directory. This is a Unity nam
   - [ ] Send Dr. Dubey an initial list of papers that I have identified
     - Those will be my initial survey
   - [ ] Why is my implementation different than others?
-    - Optimize for sending accurate player joint movements.
-      - Do a comparison between treating player as a standard object which has
-        updates and player as optimized object so that other players appear to
-        be smoother with lower network overhead
-      - Explore techniques for increasing the fidelity of player movements
-      - Bodypart fidelity is becoming more important
-        - See: http://hi5vrglove.com and
-        https://neuronmocap.com/products/perception_neuron
+    - Explore edge computing and how to create a p2p game using an edge
+      computing design
+      - One peer acts like central server until overloaded, then migrates state
+        to another peer and all peers go communicate with that peer.
+    - What problems does an edge computing approach have?
+      - Redundancy: What happens if the peer which is currently acting as the
+        central server is disconnected from the internet?
+      - Performance: How many frames are dropped when migrating state from one
+        peer to another?
+    - What types of games should I focus on?
+      - Leave out MMORPGs
+      - Focus on 4-8 player high interaction games (requirement for
+        consistently high FPS with lots of state updates like in VR settings)
+    - Must determine some threshold at which state must be migrated
+      - FPS threshold?
+      - Network latency threshold?
   - [ ] Describing and learning a new technique
   - [ ] Going beyond existing and do something new
   - [ ] What is innovative?
