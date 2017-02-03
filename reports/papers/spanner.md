@@ -31,3 +31,15 @@ Thoughts:
   moves the last piece
   - Users can specify locations at a directory level
 - (p. 4) 2.3 Data Model
+  - Spanner is closer to a relational database than a key value store like BigTable
+- (p. 5) 3 TrueTime
+  - TrueTime has bounded time uncertainty
+  - 'time master' machines per datacenter, and 'timeslave daemons' per machine
+  - Masters either have GPS antennas or atomic clocks
+  - Masters evict themselves if they are diverging from the other clocks
+- (p. 6) 4 Concurrency Control
+- (p. 6) 4.1 Timestamp Management
+  - Supports read-write transactions, read-only transactions, and snapshot reads
+  - Reads are non-blocking
+- (p. 8) 4.2.1 Read-Write Transactions
+  - Writes are buffered in a transactions so that reads during the write are not corrupted
