@@ -8,24 +8,34 @@ Papers, overviews, and lists are in the [`reports`](reports) directory.
 
 Code is in the [`Assets/Scripts`](Assets/Scripts) directory. This is a Unity naming convention.
 
+## Set up directions
+- Download [Unity v.5.5.0](https://unity3d.com/get-unity/download/archive)
+- Clone this Github repo
+- Install Nuget packages:
+  - Mac
+    - Install Nuget:  `brew install nuget`
+    - On command line, navigate to NetworkedVR directory
+    - Run command: `nuget install`
+    - Navigate to the ./Assets/packages/ folder and delete all folders and meta 
+      files except for `net35` in both the NetMQ and AsyncIO packages
+  - PC
+    - Open Visual Studio 2015
+    - Navigate to Tools > Nuget Package Manager > Package Manager Console and click
+    - When console appears, a pop up should appear asking if you want to restore packages; confirm
+    - After packages install, navigate to the ./Assets/packages/ folder and delete 
+      all folders and meta files except for `net35` in both the NetMQ and AsyncIO packages
+- Flatbuffers:
+  - Mac
+    - `brew install flatbuffers`
+    - Run [Bash compile script](./scripts/fbs_compile)
+  - PC
+    - Run [PowerShell compile script](./scripts/fbs_compile/ps1)
+- Open Unity and try to press the play button
+- Let Aaron know if you have any compile errors at this point
+
 ## Report Notes
 
-- [ ] State of the art report
-  - [ ] Send Dr. Dubey an initial list of papers that I have identified
-    - Those will be my initial survey
-  - [ ] Why is my implementation different than others?
-    - Optimize for sending accurate player joint movements.
-      - Do a comparison between treating player as a standard object which has
-        updates and player as optimized object so that other players appear to
-        be smoother with lower network overhead
-      - Explore techniques for increasing the fidelity of player movements
-      - Bodypart fidelity is becoming more important
-        - See: http://hi5vrglove.com and
-        https://neuronmocap.com/products/perception_neuron
-  - [ ] Describing and learning a new technique
-  - [ ] Going beyond existing and do something new
-  - [ ] What is innovative?
-    - [ ] First must understand what has been done
+- [X] State of the art report
 - [ ] Final report
   - [ ] Intro
   - [ ] What problem you are solving
@@ -34,15 +44,8 @@ Code is in the [`Assets/Scripts`](Assets/Scripts) directory. This is a Unity nam
   - [ ] Implementation
   - [ ] Design
   - [ ] Final results
-- [ ] Create private repo
-  - [ ] Include docs
-  - [ ] GitHub
-  - [ ] Can be public after finished
-- [ ] Look into zeromq more
-  - [ ] Go through user guide
 - [ ] Dr. Bodenheimer – Go through core VR problems
   - [ ] Clarify what this entails
-- [X] Touch base with Dr. Johnson
 
 ## Packages
 
@@ -59,5 +62,3 @@ workarounds required for each installed package.
   - Mac: brew install flatbuffers
   - PC: Download latest flatc exe https://github.com/google/flatbuffers/releases
   - Compile flatbuffers into Assets/Scripts/flatbuffers/compiled
-    - [ ] Script this on Windows
-      - I already wrote a bash script
