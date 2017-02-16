@@ -33,8 +33,8 @@ Code is in the [`Assets/Scripts`](Assets/Scripts) directory. This is a Unity nam
 - Open Unity and try to press the play button
 - Let Aaron know if you have any compile errors at this point
 - Building on Linux:
-  - When installing Unity, check the "Linux build support" checkbox.
-  - Once in Unity, go to File > Build Settings
+  - When installing Unity on Mac or Windows, check the "Linux build support" checkbox.
+  - Once in Unity on Mac or Windows, go to File > Build Settings
   - Select "Linux" as your target platform
   - Check the "Headless mode" checkbox
   - Click Build
