@@ -32,6 +32,13 @@ Code is in the [`Assets/Scripts`](Assets/Scripts) directory. This is a Unity nam
     - Run [PowerShell compile script](./scripts/fbs_compile/ps1)
 - Open Unity and try to press the play button
 - Let Aaron know if you have any compile errors at this point
+- Building on Linux:
+  - When installing Unity, check the "Linux build support" checkbox.
+  - Once in Unity, go to File > Build Settings
+  - Select "Linux" as your target platform
+  - Check the "Headless mode" checkbox
+  - Click Build
+  - Move executable to a Linux box, make it executable, and run it
 
 ## Report Notes
 
