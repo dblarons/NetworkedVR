@@ -6,7 +6,9 @@ param (
 )
 
 function NugetClean() {
-    Remove-Item -Recurse -Force .\Assets\packages
+    If (Test-Path .\Assets\packages) {
+        Remove-Item -Recurse -Force .\Assets\packages
+    }
 }
 
 function NugetInstall() {
@@ -14,7 +16,9 @@ function NugetInstall() {
 }
 
 function CleanFlatBuffers() {
-    Remove-Item -Recurse -Force .\Assets\Scripts\flatbuffers\compiled
+    If (Test-Path .\Assets\Scripts\flatbuffers\compiled) {
+        Remove-Item -Recurse -Force .\Assets\Scripts\flatbuffers\compiled
+    }
 }
 
 function CompileFlatBuffers() {
