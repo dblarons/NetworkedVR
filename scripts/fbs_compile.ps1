@@ -1,1 +1,0 @@
-.\scripts\flatc.exe --csharp --gen-onefile -o Assets\Scripts\flatbuffers\compiled Assets\Scripts\flatbuffers\schemas\helloworld.fbs
