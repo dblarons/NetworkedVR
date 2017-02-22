@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using NetMQ;
 using NetMQ.Sockets;
 using HW;
