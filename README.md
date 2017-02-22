@@ -9,15 +9,19 @@ Papers, overviews, and lists are in the [`reports`](reports) directory.
 Code is in the [`Assets/Scripts`](Assets/Scripts) directory. This is a Unity naming convention.
 
 ## Set up directions
-- Download [Unity v.5.5.0](https://unity3d.com/get-unity/download/archive)
+- Download [Unity v.5.6.0b9](https://unity3d.com/unity/beta)
+  - When installing Unity on Windows, check the "Linux build support" checkbox.
+- Install SteamVR (first install Steam, then select tools from the drop down menu and scroll down until you see SteamVR)
 - Clone this Github repo
+- Install the [Nuget package manager CLI](https://docs.microsoft.com/en-us/nuget/guides/install-nuget)
+  - I recommend first installing Chocolatey and then installing with Chocolatey
 - Open PowerShell and run the following command:
   - powershell .\build.ps1 -setup
 - Either open the project in Unity or double click on .\Assets\Playground.unity
-- Let Aaron know if you have any compile errors at this point
+- On Windows, press the play button
+  - Let Aaron know if you have any compile errors at this point
 - Building on Linux:
-  - When installing Unity on Mac or Windows, check the "Linux build support" checkbox.
-  - Once in Unity on Mac or Windows, go to File > Build Settings
+  - Once in Unity on Windows, go to File > Build Settings
   - Select "Linux" as your target platform
   - Check the "Headless mode" checkbox
   - Click Build
