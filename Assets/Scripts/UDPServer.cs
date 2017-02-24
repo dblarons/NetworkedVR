@@ -4,11 +4,13 @@ using UnityEngine;
 
 namespace Assets.Scripts {
   class UDPServer {
+    private static readonly int MAX_CONNECTIONS = 100;
+
     NetServer s_server;
 
     public UDPServer(int port = 14242) {
       NetPeerConfiguration serverConfig = new NetPeerConfiguration("chat");
-      serverConfig.MaximumConnections = 100;
+      serverConfig.MaximumConnections = MAX_CONNECTIONS;
       serverConfig.Port = port;
       s_server = new NetServer(serverConfig);
       s_server.Start();
@@ -21,9 +23,6 @@ namespace Assets.Scripts {
       }
 
       byte[] bytes = null;
-
-      Debug.Log("Message received");
-      // Handle incoming message.
       switch (im.MessageType) {
         case NetIncomingMessageType.DebugMessage:
         case NetIncomingMessageType.ErrorMessage:
