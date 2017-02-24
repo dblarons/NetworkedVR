@@ -3,114 +3,49 @@ using HW;
 using FlatBuffers;
 using Lidgren.Network;
 using System.Collections.Generic;
+using Assets.Scripts;
 
 public class HelloWorld : MonoBehaviour {
-  FlatBufferBuilder builder;
-
-  static NetServer s_server;
-  static NetClient s_client;
+  UDPClient udpClient;
+  UDPServer udpServer;
 
   // Use this for initialization
   void Start () {
-    // Server
-    NetPeerConfiguration serverConfig = new NetPeerConfiguration("chat");
-    serverConfig.MaximumConnections = 100;
-    serverConfig.Port = 14242;
-    s_server = new NetServer(serverConfig);
-    s_server.Start();
+    udpClient = new UDPClient();
+    udpServer = new UDPServer();
 
-    // Client
-    NetPeerConfiguration clientConfig = new NetPeerConfiguration("chat");
-		clientConfig.AutoFlushSendQueue = false;
-		s_client = new NetClient(clientConfig);
-    s_client.Start();
-
-		NetOutgoingMessage hail = s_client.CreateMessage("This is the hail message");
-		s_client.Connect("localhost", 14242, hail);
+    udpClient.Connect();
   }
 
-  // Update is called once per frame
   void Update () {
-    NetIncomingMessage im;
-    while ((im = s_server.ReadMessage()) != null) {
-      Debug.Log("Message received");
-      // Handle incoming message.
-      switch (im.MessageType) {
-        case NetIncomingMessageType.DebugMessage:
-        case NetIncomingMessageType.ErrorMessage:
-        case NetIncomingMessageType.WarningMessage:
-        case NetIncomingMessageType.VerboseDebugMessage:
-          string text = im.ReadString();
-          Debug.Log(text);
-          break;
-
-        case NetIncomingMessageType.StatusChanged:
-          NetConnectionStatus status = (NetConnectionStatus)im.ReadByte();
-
-          string reason = im.ReadString();
-          Debug.Log(NetUtility.ToHexString(im.SenderConnection.RemoteUniqueIdentifier) + " " + status + ": " + reason);
-
-          if (status == NetConnectionStatus.Connected) {
-            Debug.Log("Remote hail: " + im.SenderConnection.RemoteHailMessage.ReadString());
-          }
-          break;
-
-        case NetIncomingMessageType.Data:
-          // incoming chat message from a client
-          string chat = im.ReadString();
-
-          Debug.Log("Broadcasting '" + chat + "'");
-
-          // broadcast this to all connections, except sender
-          List<NetConnection> all = s_server.Connections; // get copy
-
-          if (all.Count > 0) {
-            NetOutgoingMessage om = s_server.CreateMessage();
-            om.Write(NetUtility.ToHexString(im.SenderConnection.RemoteUniqueIdentifier) + " said: " + chat);
-            s_server.SendMessage(om, all, NetDeliveryMethod.ReliableOrdered, 0);
-          }
-          break;
-
-        default:
-          Debug.Log("Unhandled type: " + im.MessageType + " " + im.LengthBytes + " bytes " + im.DeliveryMethod + "|" + im.SequenceChannel);
-          break;
+    {
+      byte[] bytes = udpServer.Read();
+      if (bytes != null) {
+        var buffer = new ByteBuffer(bytes);
+        var action = Action.GetRootAsAction(buffer);
+        var position = action.Position;
+        Debug.Log("From Client: " + action.Name);
+        Debug.Log("From Client: " + position.X);
+        Debug.Log("From Client: " + position.Y);
+        Debug.Log("From Client: " + position.Z);
       }
-
-      s_server.Recycle(im);
     }
 
-    var clientText = "foo bar";
-    NetOutgoingMessage clientMsg = s_client.CreateMessage(clientText);
-    s_client.SendMessage(clientMsg, NetDeliveryMethod.ReliableOrdered);
-    Debug.Log("Sending '" + clientText + "'");
-    s_client.FlushSendQueue();
+    {
+      FlatBufferBuilder builder = new FlatBufferBuilder(1024);
+      var actionName = builder.CreateString("my action");
+      var position = Vec3.CreateVec3(builder, 1.0f, 2.0f, 3.0f);
 
-    // var sendText = "foo bar";
-    // NetOutgoingMessage clientMsg = s_client.CreateMessage(sendText);
-		// s_client.SendMessage(clientMsg, NetDeliveryMethod.ReliableOrdered);
-		// Debug.Log("Sending '" + sendText + "'");
-		// s_client.FlushSendQueue();
+      // Build action.
+      Action.StartAction(builder);
+      Action.AddPosition(builder, position);
+      Action.AddName(builder, actionName);
+      var action = Action.EndAction(builder);
+      builder.Finish(action.Value);
 
-    // {
-    //   var actionName = builder.CreateString("my action");
-    //   var position = Vec3.CreateVec3(builder, 1.0f, 2.0f, 3.0f);
+      byte[] bytes = builder.SizedByteArray();
 
-    //   // Build action.
-    //   Action.StartAction(builder);
-    //   Action.AddPosition(builder, position);
-    //   Action.AddName(builder, actionName);
-    //   var action = Action.EndAction(builder);
-    //   builder.Finish(action.Value);
-    // }
-
-    // {
-    //   // Access flatbuffer fields.
-    //   var action = Action.GetRootAsAction(buf);
-    //   var position = action.Position;
-    //   Debug.Log("From Client: " + action.Name);
-    //   Debug.Log("From Client: " + position.X);
-    //   Debug.Log("From Client: " + position.Y);
-    //   Debug.Log("From Client: " + position.Z);
-    // }
+      udpClient.SendMessage(bytes);
+    }
   }
 }
