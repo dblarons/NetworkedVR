@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37429237, g: 0.42147171, b: 0.46712714, a: 1}
+  m_IndirectSpecularColor: {r: 0.18053603, g: 0.2260181, b: 0.30718738, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -166,6 +166,7 @@ MonoBehaviour:
     buttonOneModelPath: 
     buttonTwoModelPath: 
     systemMenuModelPath: 
+    startMenuModelPath: 
   elementHighlighterOverrides:
     body: {fileID: 0}
     trigger: {fileID: 0}
@@ -175,6 +176,7 @@ MonoBehaviour:
     buttonOne: {fileID: 0}
     buttonTwo: {fileID: 0}
     systemMenu: {fileID: 0}
+    startMenu: {fileID: 0}
 --- !u!114 &106315683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,7 +193,7 @@ MonoBehaviour:
   grabToggleButton: 7
   useToggleButton: 3
   uiClickButton: 3
-  menuToggleButton: 12
+  menuToggleButton: 14
   axisFidelity: 1
   triggerClickThreshold: 1
   gripClickThreshold: 1
@@ -212,6 +214,7 @@ MonoBehaviour:
   buttonOneTouched: 0
   buttonTwoPressed: 0
   buttonTwoTouched: 0
+  startMenuPressed: 0
   pointerPressed: 0
   grabPressed: 0
   usePressed: 0
@@ -296,35 +299,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2023571378}
   m_RootOrder: 1
---- !u!21 &238317813
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: Sprites/Default
-  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 5
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  m_SavedProperties:
-    serializedVersion: 2
-    m_TexEnvs:
-    - first:
-        name: _MainTex
-      second:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - first:
-        name: PixelSnap
-      second: 0
-    m_Colors:
-    - first:
-        name: _Color
-      second: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &374737846
 GameObject:
   m_ObjectHideFlags: 0
@@ -713,6 +687,7 @@ MonoBehaviour:
     buttonOneModelPath: 
     buttonTwoModelPath: 
     systemMenuModelPath: 
+    startMenuModelPath: 
   elementHighlighterOverrides:
     body: {fileID: 0}
     trigger: {fileID: 0}
@@ -722,6 +697,7 @@ MonoBehaviour:
     buttonOne: {fileID: 0}
     buttonTwo: {fileID: 0}
     systemMenu: {fileID: 0}
+    startMenu: {fileID: 0}
 --- !u!114 &708505811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -738,7 +714,7 @@ MonoBehaviour:
   grabToggleButton: 7
   useToggleButton: 3
   uiClickButton: 3
-  menuToggleButton: 12
+  menuToggleButton: 14
   axisFidelity: 1
   triggerClickThreshold: 1
   gripClickThreshold: 1
@@ -759,6 +735,7 @@ MonoBehaviour:
   buttonOneTouched: 0
   buttonTwoPressed: 0
   buttonTwoTouched: 0
+  startMenuPressed: 0
   pointerPressed: 0
   grabPressed: 0
   usePressed: 0
@@ -810,7 +787,6 @@ MonoBehaviour:
   _head: {fileID: 2131297203}
   _ears: {fileID: 2085381191}
   wireframe: 0
-  flip: {fileID: 0}
 --- !u!124 &734656377
 Behaviour:
   m_ObjectHideFlags: 0
@@ -902,6 +878,7 @@ MonoBehaviour:
   boundariesSDK: 1
   headsetSDK: 1
   controllerSDK: 1
+  autoManageScriptDefines: 1
   actualBoundaries: {fileID: 815778966}
   actualHeadset: {fileID: 734656374}
   actualLeftController: {fileID: 2115991708}
@@ -963,7 +940,7 @@ MeshFilter:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 815778966}
-  m_Mesh: {fileID: 1661062641}
+  m_Mesh: {fileID: 1688363230}
 --- !u!23 &815778969
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -978,7 +955,7 @@ MeshRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 238317813}
+  - {fileID: 976738747}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -1009,6 +986,7 @@ MonoBehaviour:
   left: {fileID: 2115991708}
   right: {fileID: 1204062404}
   objects: []
+  assignAllBeforeIdentified: 0
 --- !u!4 &815778971
 Transform:
   m_ObjectHideFlags: 0
@@ -1134,6 +1112,35 @@ MonoBehaviour:
 Transform:
   m_PrefabParentObject: {fileID: 496472, guid: d5fe2f7f9d3e98a478d151422643620c, type: 2}
   m_PrefabInternal: {fileID: 2048786846}
+--- !u!21 &976738747
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Sprites/Default
+  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+    - first:
+        name: _MainTex
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - first:
+        name: PixelSnap
+      second: 0
+    m_Colors:
+    - first:
+        name: _Color
+      second: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1204062404
 GameObject:
   m_ObjectHideFlags: 0
@@ -1242,7 +1249,7 @@ MonoBehaviour:
   holdButtonToGrab: 1
   stayGrabbedOnTeleport: 1
   validDrop: 1
-  grabOverrideButton: 8
+  grabOverrideButton: 0
   allowedGrabControllers: 0
   grabAttachMechanicScript: {fileID: 0}
   secondaryGrabActionScript: {fileID: 0}
@@ -1250,7 +1257,7 @@ MonoBehaviour:
   holdButtonToUse: 1
   useOnlyIfGrabbed: 0
   pointerActivatesUseAction: 0
-  useOverrideButton: 8
+  useOverrideButton: 0
   allowedUseControllers: 0
   usingState: 0
 --- !u!23 &1570480414
@@ -1315,7 +1322,7 @@ Transform:
   - {fileID: 871774852}
   m_Father: {fileID: 2023571378}
   m_RootOrder: 2
---- !u!43 &1661062641
+--- !u!43 &1688363230
 Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1838,7 +1845,6 @@ GameObject:
   - 20: {fileID: 2131297207}
   - 114: {fileID: 2131297206}
   - 92: {fileID: 2131297205}
-  - 114: {fileID: 2131297204}
   m_Layer: 0
   m_Name: Camera (head)
   m_TagString: MainCamera
@@ -1861,17 +1867,6 @@ Transform:
   - {fileID: 2085381191}
   m_Father: {fileID: 815778971}
   m_RootOrder: 2
---- !u!114 &2131297204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2131297202}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be96d45fe21847a4a805d408a8015c84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!92 &2131297205
 Behaviour:
   m_ObjectHideFlags: 0

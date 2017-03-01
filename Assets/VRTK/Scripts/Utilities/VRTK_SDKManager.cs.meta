@@ -1,18 +1,10 @@
 fileFormatVersion: 2
 guid: 5837af0260a118e4d808bfe0405429a1
-timeCreated: 1484916580
-licenseType: Free
+timeCreated: 1480960096
+licenseType: Store
 MonoImporter:
   serializedVersion: 2
-  defaultReferences:
-  - actualBoundaries: {instanceID: 0}
-  - actualHeadset: {instanceID: 0}
-  - actualLeftController: {instanceID: 0}
-  - actualRightController: {instanceID: 0}
-  - modelAliasLeftController: {instanceID: 0}
-  - modelAliasRightController: {instanceID: 0}
-  - scriptAliasLeftController: {instanceID: 0}
-  - scriptAliasRightController: {instanceID: 0}
+  defaultReferences: []
   executionOrder: -16000
   icon: {instanceID: 0}
   userData: 

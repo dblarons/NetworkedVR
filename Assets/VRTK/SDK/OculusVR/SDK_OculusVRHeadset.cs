@@ -3,12 +3,27 @@ namespace VRTK
 {
 #if VRTK_SDK_OCULUSVR
     using UnityEngine;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The OculusVR Headset SDK script provides a bridge to the OculusVR SDK.
     /// </summary>
     public class SDK_OculusVRHeadset : SDK_BaseHeadset
     {
+        private Quaternion previousHeadsetRotation;
+        private Quaternion currentHeadsetRotation;
+
+        /// <summary>
+        /// The ProcessUpdate method enables an SDK to run logic for every Unity Update
+        /// </summary>
+        /// <param name="options">A dictionary of generic options that can be used to within the update.</param>
+        public override void ProcessUpdate(Dictionary<string, object> options)
+        {
+            var device = GetHeadset();
+            previousHeadsetRotation = currentHeadsetRotation;
+            currentHeadsetRotation = device.transform.rotation;
+        }
+
         /// <summary>
         /// The GetHeadset method returns the Transform of the object that is used to represent the headset in the scene.
         /// </summary>
@@ -39,6 +54,25 @@ namespace VRTK
                 cachedHeadsetCamera = GetHeadset();
             }
             return cachedHeadsetCamera;
+        }
+
+        /// <summary>
+        /// The GetHeadsetVelocity method is used to determine the current velocity of the headset.
+        /// </summary>
+        /// <returns>A Vector3 containing the current velocity of the headset.</returns>
+        public override Vector3 GetHeadsetVelocity()
+        {
+            return OVRManager.isHmdPresent ? OVRPlugin.GetEyeVelocity(OVRPlugin.Eye.Left).ToOVRPose().position : Vector3.zero;
+        }
+
+        /// <summary>
+        /// The GetHeadsetAngularVelocity method is used to determine the current angular velocity of the headset.
+        /// </summary>
+        /// <returns>A Vector3 containing the current angular velocity of the headset.</returns>
+        public override Vector3 GetHeadsetAngularVelocity()
+        {
+            var deltaRotation = currentHeadsetRotation * Quaternion.Inverse(previousHeadsetRotation);
+            return new Vector3(Mathf.DeltaAngle(0, deltaRotation.eulerAngles.x), Mathf.DeltaAngle(0, deltaRotation.eulerAngles.y), Mathf.DeltaAngle(0, deltaRotation.eulerAngles.z));
         }
 
         /// <summary>

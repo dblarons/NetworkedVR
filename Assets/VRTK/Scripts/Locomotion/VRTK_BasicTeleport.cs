@@ -57,18 +57,21 @@ namespace VRTK
         private float fadeInTime = 0f;
         private float maxBlinkTransitionSpeed = 1.5f;
         private float maxBlinkDistance = 33f;
+        private Coroutine initaliseListeners;
 
         /// <summary>
         /// The InitDestinationSetListener method is used to register the teleport script to listen to events from the given game object that is used to generate destination markers. Any destination set event emitted by a registered game object will initiate the teleport to the given destination location.
         /// </summary>
         /// <param name="markerMaker">The game object that is used to generate destination marker events, such as a controller.</param>
         /// <param name="register">Determines whether to register or unregister the listeners.</param>
-        public void InitDestinationSetListener(GameObject markerMaker, bool register)
+        public virtual void InitDestinationSetListener(GameObject markerMaker, bool register)
         {
             if (markerMaker)
             {
-                foreach (var worldMarker in markerMaker.GetComponentsInChildren<VRTK_DestinationMarker>())
+                VRTK_DestinationMarker[] worldMarkers = markerMaker.GetComponentsInChildren<VRTK_DestinationMarker>();
+                for (int i = 0; i < worldMarkers.Length; i++)
                 {
+                    VRTK_DestinationMarker worldMarker = worldMarkers[i];
                     if (register)
                     {
                         worldMarker.DestinationMarkerSet += new DestinationMarkerEventHandler(DoTeleport);
@@ -88,11 +91,17 @@ namespace VRTK
         /// The ToggleTeleportEnabled method is used to determine whether the teleporter will initiate a teleport on a destination set event, if the state is true then the teleporter will work as normal, if the state is false then the teleporter will not be operational.
         /// </summary>
         /// <param name="state">Toggles whether the teleporter is enabled or disabled.</param>
-        public void ToggleTeleportEnabled(bool state)
+        public virtual void ToggleTeleportEnabled(bool state)
         {
             enableTeleport = state;
         }
 
+        /// <summary>
+        /// The ValidLocation method determines if the given target is a location that can be teleported to
+        /// </summary>
+        /// <param name="target">The Transform that the destination marker is touching.</param>
+        /// <param name="destinationPosition">The position in world space that is the destination.</param>
+        /// <returns>Returns true if the target is a valid location.</returns>
         public virtual bool ValidLocation(Transform target, Vector3 destinationPosition)
         {
             //If the target is one of the player objects or a UI Canvas then it's never a valid location
@@ -126,30 +135,18 @@ namespace VRTK
         {
             adjustYForTerrain = false;
             enableTeleport = true;
-            StartCoroutine(InitListenersAtEndOfFrame());
+            initaliseListeners = StartCoroutine(InitListenersAtEndOfFrame());
             VRTK_ObjectCache.registeredTeleporters.Add(this);
         }
 
         protected virtual void OnDisable()
         {
+            if (initaliseListeners != null)
+            {
+                StopCoroutine(initaliseListeners);
+            }
             InitDestinationMarkerListeners(false);
             VRTK_ObjectCache.registeredTeleporters.Remove(this);
-        }
-
-        protected void OnTeleporting(object sender, DestinationMarkerEventArgs e)
-        {
-            if (Teleporting != null)
-            {
-                Teleporting(this, e);
-            }
-        }
-
-        protected void OnTeleported(object sender, DestinationMarkerEventArgs e)
-        {
-            if (Teleported != null)
-            {
-                Teleported(this, e);
-            }
         }
 
         protected virtual void Blink(float transitionSpeed)
@@ -205,6 +202,22 @@ namespace VRTK
             return position;
         }
 
+        protected void OnTeleporting(object sender, DestinationMarkerEventArgs e)
+        {
+            if (Teleporting != null)
+            {
+                Teleporting(this, e);
+            }
+        }
+
+        protected void OnTeleported(object sender, DestinationMarkerEventArgs e)
+        {
+            if (Teleported != null)
+            {
+                Teleported(this, e);
+            }
+        }
+
         private void CalculateBlinkDelay(float blinkSpeed, Vector3 newPosition)
         {
             blinkPause = 0f;
@@ -225,7 +238,10 @@ namespace VRTK
         private IEnumerator InitListenersAtEndOfFrame()
         {
             yield return new WaitForEndOfFrame();
-            InitDestinationMarkerListeners(true);
+            if (enabled)
+            {
+                InitDestinationMarkerListeners(true);
+            }
         }
 
         private void InitDestinationMarkerListeners(bool state)
@@ -234,8 +250,7 @@ namespace VRTK
             var rightHand = VRTK_DeviceFinder.GetControllerRightHand();
 
             InitDestinationSetListener(leftHand, state);
-            InitDestinationSetListener(rightHand, state)
-;
+            InitDestinationSetListener(rightHand, state);
             foreach (var destinationMarker in VRTK_ObjectCache.registeredDestinationMarkers)
             {
                 if (destinationMarker.gameObject != leftHand && destinationMarker.gameObject != rightHand)

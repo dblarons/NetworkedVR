@@ -5,7 +5,7 @@
     using UnityEngine.UI;
     using System.Collections.Generic;
 
-    public class VRTK_EventSystemVRInput : PointerInputModule
+    public class VRTK_VRInputModule : PointerInputModule
     {
         public List<VRTK_UIPointer> pointers = new List<VRTK_UIPointer>();
 
@@ -14,10 +14,17 @@
             pointers.Clear();
         }
 
+        //Needed to allow other regular (non-VR) InputModules in combination with VRTK_EventSystem
+        public override bool IsModuleSupported()
+        {
+            return false;
+        }
+
         public override void Process()
         {
-            foreach (var pointer in pointers)
+            for (int i = 0; i < pointers.Count; i++)
             {
+                VRTK_UIPointer pointer = pointers[i];
                 if (pointer.gameObject.activeInHierarchy && pointer.enabled)
                 {
                     List<RaycastResult> results = new List<RaycastResult>();
@@ -86,12 +93,28 @@
             return (canvasCheck && canvasCheck.enabled ? true : false);
         }
 
+        private void CheckPointerHoverClick(VRTK_UIPointer pointer, List<RaycastResult> results)
+        {
+            if (pointer.hoverDurationTimer > 0f)
+            {
+                pointer.hoverDurationTimer -= Time.deltaTime;
+            }
+
+            if (pointer.canClickOnHover && pointer.hoverDurationTimer <= 0f)
+            {
+                pointer.canClickOnHover = false;
+                ClickOnDown(pointer, results, true);
+            }
+        }
+
         private void Hover(VRTK_UIPointer pointer, List<RaycastResult> results)
         {
             if (pointer.pointerEventData.pointerEnter)
             {
+                CheckPointerHoverClick(pointer, results);
                 if (!ValidElement(pointer.pointerEventData.pointerEnter))
                 {
+                    pointer.pointerEventData.pointerEnter = null;
                     return;
                 }
 
@@ -151,10 +174,10 @@
         {
             switch (pointer.clickMethod)
             {
-                case VRTK_UIPointer.ClickMethods.Click_On_Button_Up:
+                case VRTK_UIPointer.ClickMethods.ClickOnButtonUp:
                     ClickOnUp(pointer, results);
                     break;
-                case VRTK_UIPointer.ClickMethods.Click_On_Button_Down:
+                case VRTK_UIPointer.ClickMethods.ClickOnButtonDown:
                     ClickOnDown(pointer, results);
                     break;
             }
@@ -170,9 +193,9 @@
             }
         }
 
-        private void ClickOnDown(VRTK_UIPointer pointer, List<RaycastResult> results)
+        private void ClickOnDown(VRTK_UIPointer pointer, List<RaycastResult> results, bool forceClick = false)
         {
-            pointer.pointerEventData.eligibleForClick = pointer.ValidClick(true);
+            pointer.pointerEventData.eligibleForClick = (forceClick ? true : pointer.ValidClick(true));
 
             if (IsEligibleClick(pointer, results))
             {
@@ -237,7 +260,7 @@
 
         private void Drag(VRTK_UIPointer pointer, List<RaycastResult> results)
         {
-            pointer.pointerEventData.dragging = pointer.controller.uiClickPressed && pointer.pointerEventData.delta != Vector2.zero;
+            pointer.pointerEventData.dragging = pointer.SelectionButtonActive() && pointer.pointerEventData.delta != Vector2.zero;
 
             if (pointer.pointerEventData.pointerDrag)
             {
