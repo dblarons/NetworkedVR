@@ -1,6 +1,7 @@
-﻿// Player Climb|Locomotion|20080
+﻿// Player Climb|Locomotion|20120
 namespace VRTK
 {
+    using GrabAttachMechanics;
     using UnityEngine;
 
     /// <summary>
@@ -43,12 +44,53 @@ namespace VRTK
         public event PlayerClimbEventHandler PlayerClimbEnded;
 
         private Transform playArea;
-        private Vector3 startControllerPosition;
-        private Vector3 startPosition;
+        private Vector3 startControllerScaledLocalPosition;
+        private Vector3 startGrabPointLocalPosition;
+        private Vector3 startPlayAreaWorldOffset;
         private GameObject grabbingController;
         private GameObject climbingObject;
+        private Quaternion climbingObjectLastRotation;
         private VRTK_BodyPhysics bodyPhysics;
-        private bool isClimbing = false;
+        private bool isClimbing;
+        private bool useGrabbedObjectRotation;
+
+        protected virtual void Awake()
+        {
+            playArea = VRTK_DeviceFinder.PlayAreaTransform();
+            bodyPhysics = GetComponent<VRTK_BodyPhysics>();
+        }
+
+        protected virtual void OnEnable()
+        {
+            InitListeners(true);
+        }
+
+        protected virtual void OnDisable()
+        {
+            Ungrab(false, 0, climbingObject);
+            InitListeners(false);
+        }
+
+        protected virtual void Update()
+        {
+            if (isClimbing)
+            {
+                Vector3 controllerLocalOffset = GetScaledLocalPosition(grabbingController.transform) - startControllerScaledLocalPosition;
+                Vector3 grabPointWorldPosition = climbingObject.transform.TransformPoint(startGrabPointLocalPosition);
+                playArea.position = grabPointWorldPosition + startPlayAreaWorldOffset - controllerLocalOffset;
+
+                if (useGrabbedObjectRotation)
+                {
+                    Vector3 lastRotationVec = climbingObjectLastRotation * Vector3.forward;
+                    Vector3 currentObectRotationVec = climbingObject.transform.rotation * Vector3.forward;
+                    Vector3 axis = Vector3.Cross(lastRotationVec, currentObectRotationVec);
+                    float angle = Vector3.Angle(lastRotationVec, currentObectRotationVec);
+
+                    playArea.RotateAround(grabPointWorldPosition, axis, angle);
+                    climbingObjectLastRotation = climbingObject.transform.rotation;
+                }
+            }
+        }
 
         private void OnPlayerClimbStarted(PlayerClimbEventArgs e)
         {
@@ -72,31 +114,6 @@ namespace VRTK
             e.controllerIndex = controllerIndex;
             e.target = target;
             return e;
-        }
-
-        private void Awake()
-        {
-            playArea = VRTK_DeviceFinder.PlayAreaTransform();
-            bodyPhysics = GetComponent<VRTK_BodyPhysics>();
-        }
-
-        private void OnEnable()
-        {
-            InitListeners(true);
-        }
-
-        private void OnDisable()
-        {
-            Ungrab(false, 0, climbingObject);
-            InitListeners(false);
-        }
-
-        private void Update()
-        {
-            if (isClimbing)
-            {
-                playArea.position = startPosition - (GetPosition(grabbingController.transform) - startControllerPosition);
-            }
         }
 
         private void InitListeners(bool state)
@@ -128,7 +145,7 @@ namespace VRTK
             Ungrab(false, e.controllerIndex, e.target.gameObject);
         }
 
-        private Vector3 GetPosition(Transform objTransform)
+        private Vector3 GetScaledLocalPosition(Transform objTransform)
         {
             if (usePlayerScale)
             {
@@ -167,8 +184,11 @@ namespace VRTK
             isClimbing = true;
             climbingObject = target;
             grabbingController = currentGrabbingController;
-            startControllerPosition = GetPosition(grabbingController.transform);
-            startPosition = playArea.position;
+            startControllerScaledLocalPosition = GetScaledLocalPosition(grabbingController.transform);
+            startGrabPointLocalPosition = climbingObject.transform.InverseTransformPoint(grabbingController.transform.position);
+            startPlayAreaWorldOffset = playArea.transform.position - grabbingController.transform.position;
+            climbingObjectLastRotation = climbingObject.transform.rotation;
+            useGrabbedObjectRotation = climbingObject.GetComponent<VRTK_ClimbableGrabAttach>().useObjectRotation;
 
             OnPlayerClimbStarted(SetPlayerClimbEvent(controllerIndex, climbingObject));
         }
@@ -185,14 +205,14 @@ namespace VRTK
 
                 if (device)
                 {
-                    velocity = -device.GetComponent<VRTK_ControllerEvents>().GetVelocity();
+                    velocity = -VRTK_DeviceFinder.GetControllerVelocity(device);
                     if (usePlayerScale)
                     {
                         velocity = Vector3.Scale(velocity, playArea.localScale);
                     }
                 }
 
-                bodyPhysics.ApplyBodyVelocity(velocity, true);
+                bodyPhysics.ApplyBodyVelocity(velocity, true, true);
             }
 
             isClimbing = false;

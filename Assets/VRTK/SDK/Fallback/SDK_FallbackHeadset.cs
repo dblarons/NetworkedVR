@@ -2,6 +2,7 @@
 namespace VRTK
 {
     using UnityEngine;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The Fallback System SDK script provides a fallback collection of methods that return null or default Headset values.
@@ -11,6 +12,14 @@ namespace VRTK
     /// </remarks>
     public class SDK_FallbackHeadset : SDK_BaseHeadset
     {
+        /// <summary>
+        /// The ProcessUpdate method enables an SDK to run logic for every Unity Update
+        /// </summary>
+        /// <param name="options">A dictionary of generic options that can be used to within the update.</param>
+        public override void ProcessUpdate(Dictionary<string, object> options)
+        {
+        }
+
         /// <summary>
         /// The GetHeadset method returns the Transform of the object that is used to represent the headset in the scene.
         /// </summary>
@@ -27,6 +36,24 @@ namespace VRTK
         public override Transform GetHeadsetCamera()
         {
             return null;
+        }
+
+        /// <summary>
+        /// The GetHeadsetVelocity method is used to determine the current velocity of the headset.
+        /// </summary>
+        /// <returns>A Vector3 containing the current velocity of the headset.</returns>
+        public override Vector3 GetHeadsetVelocity()
+        {
+            return Vector3.zero;
+        }
+
+        /// <summary>
+        /// The GetHeadsetAngularVelocity method is used to determine the current angular velocity of the headset.
+        /// </summary>
+        /// <returns>A Vector3 containing the current angular velocity of the headset.</returns>
+        public override Vector3 GetHeadsetAngularVelocity()
+        {
+            return Vector3.zero;
         }
 
         /// <summary>

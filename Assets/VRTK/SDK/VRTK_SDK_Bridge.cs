@@ -10,6 +10,11 @@
         private static SDK_BaseController controllerSDK = null;
         private static SDK_BaseBoundaries boundariesSDK = null;
 
+        public static void HeadsetProcessUpdate(Dictionary<string, object> options = null)
+        {
+            GetHeadsetSDK().ProcessUpdate(options);
+        }
+
         public static void ControllerProcessUpdate(uint index, Dictionary<string, object> options = null)
         {
             GetControllerSDK().ProcessUpdate(index, options);
@@ -40,9 +45,9 @@
             return GetControllerSDK().GetControllerOrigin(controller);
         }
 
-        public static Transform GenerateControllerPointerOrigin()
+        public static Transform GenerateControllerPointerOrigin(GameObject parent)
         {
-            return GetControllerSDK().GenerateControllerPointerOrigin();
+            return GetControllerSDK().GenerateControllerPointerOrigin(parent);
         }
 
         public static GameObject GetControllerLeftHand(bool actual)
@@ -113,6 +118,16 @@
         public static Vector3 GetAngularVelocityOnIndex(uint index)
         {
             return GetControllerSDK().GetAngularVelocityOnIndex(index);
+        }
+
+        public static Vector3 GetHeadsetVelocity()
+        {
+            return GetHeadsetSDK().GetHeadsetVelocity();
+        }
+
+        public static Vector3 GetHeadsetAngularVelocity()
+        {
+            return GetHeadsetSDK().GetHeadsetAngularVelocity();
         }
 
         public static Vector2 GetTouchpadAxisOnIndex(uint index)
@@ -320,6 +335,38 @@
             return GetControllerSDK().IsButtonTwoTouchedUpOnIndex(index);
         }
 
+        //StartMenu
+
+        public static bool IsStartMenuPressedOnIndex(uint index)
+        {
+            return GetControllerSDK().IsStartMenuPressedOnIndex(index);
+        }
+
+        public static bool IsStartMenuPressedDownOnIndex(uint index)
+        {
+            return GetControllerSDK().IsStartMenuPressedDownOnIndex(index);
+        }
+
+        public static bool IsStartMenuPressedUpOnIndex(uint index)
+        {
+            return GetControllerSDK().IsStartMenuPressedUpOnIndex(index);
+        }
+
+        public static bool IsStartMenuTouchedOnIndex(uint index)
+        {
+            return GetControllerSDK().IsStartMenuTouchedOnIndex(index);
+        }
+
+        public static bool IsStartMenuTouchedDownOnIndex(uint index)
+        {
+            return GetControllerSDK().IsStartMenuTouchedDownOnIndex(index);
+        }
+
+        public static bool IsStartMenuTouchedUpOnIndex(uint index)
+        {
+            return GetControllerSDK().IsStartMenuTouchedUpOnIndex(index);
+        }
+
         public static Transform GetHeadset()
         {
             return GetHeadsetSDK().GetHeadset();
@@ -380,7 +427,7 @@
             GetSystemSDK().ForceInterleavedReprojectionOn(force);
         }
 
-        private static SDK_BaseSystem GetSystemSDK()
+        public static SDK_BaseSystem GetSystemSDK()
         {
             if (systemSDK == null)
             {
@@ -389,7 +436,7 @@
             return systemSDK;
         }
 
-        private static SDK_BaseHeadset GetHeadsetSDK()
+        public static SDK_BaseHeadset GetHeadsetSDK()
         {
             if (headsetSDK == null)
             {
@@ -398,7 +445,7 @@
             return headsetSDK;
         }
 
-        private static SDK_BaseController GetControllerSDK()
+        public static SDK_BaseController GetControllerSDK()
         {
             if (controllerSDK == null)
             {
@@ -407,7 +454,7 @@
             return controllerSDK;
         }
 
-        private static SDK_BaseBoundaries GetBoundariesSDK()
+        public static SDK_BaseBoundaries GetBoundariesSDK()
         {
             if (boundariesSDK == null)
             {

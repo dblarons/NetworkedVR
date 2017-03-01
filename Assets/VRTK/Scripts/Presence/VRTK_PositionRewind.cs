@@ -21,6 +21,7 @@ namespace VRTK
 
         private Transform headset;
         private Transform playArea;
+        protected Rigidbody playareaRigidbody;
 
         private VRTK_HeadsetCollision headsetCollision;
 
@@ -33,11 +34,12 @@ namespace VRTK
         private bool isColliding = false;
         private float collideTimer = 0f;
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             lastGoodPositionSet = false;
             headset = VRTK_DeviceFinder.HeadsetTransform();
             playArea = VRTK_DeviceFinder.PlayAreaTransform();
+            playareaRigidbody = playArea.GetComponent<Rigidbody>();
             headsetCollision = GetComponent<VRTK_HeadsetCollision>();
             ManageHeadsetListeners(true);
             if (!playArea)
@@ -46,12 +48,12 @@ namespace VRTK
             }
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             ManageHeadsetListeners(false);
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (isColliding)
             {
@@ -68,7 +70,7 @@ namespace VRTK
             }
         }
 
-        private void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             if (!isColliding && playArea)
             {
@@ -123,6 +125,11 @@ namespace VRTK
                 var finalPosition = resetPosition + (pushbackDistance * pushbackPosition);
 
                 playArea.position = finalPosition;
+                if (playareaRigidbody)
+                {
+                    playareaRigidbody.velocity = Vector3.zero;
+                    playareaRigidbody.angularVelocity = Vector3.zero;
+                }
             }
         }
 
