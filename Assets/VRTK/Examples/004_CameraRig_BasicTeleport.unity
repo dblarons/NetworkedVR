@@ -507,6 +507,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 759740581}
   - 114: {fileID: 759740583}
+  - 114: {fileID: 759740584}
   - 114: {fileID: 759740582}
   m_Layer: 0
   m_Name: RightController
@@ -536,29 +537,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 759740580}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 408a45c3d6ea5804fa3bcaaaf8251ab5, type: 3}
+  m_Script: {fileID: 11500000, guid: 7fc65878c7102524bb8c2bcfbefff497, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableTeleport: 1
-  controller: {fileID: 0}
-  pointerOriginTransform: {fileID: 0}
-  pointerMaterial: {fileID: 0}
-  pointerHitColor: {r: 0, g: 0.5, b: 0, a: 1}
-  pointerMissColor: {r: 0.8, g: 0, b: 0, a: 1}
-  holdButtonToActivate: 1
-  interactWithObjects: 0
-  grabToPointerTip: 0
-  activateDelay: 0
-  pointerVisibility: 0
+  playareaCursor: {fileID: 0}
   layersToIgnore:
     serializedVersion: 2
     m_Bits: 4
-  pointerThickness: 0.002
-  pointerLength: 100
-  showPointerTip: 1
-  customPointerCursor: {fileID: 0}
-  pointerCursorMatchTargetNormal: 0
-  pointerCursorRescaledAlongDistance: 0
+  validCollisionColor: {r: 0, g: 0.49803922, b: 0, a: 1}
+  invalidCollisionColor: {r: 0.8, g: 0, b: 0, a: 1}
+  tracerVisibility: 0
+  cursorVisibility: 0
+  maximumLength: 100
+  scaleFactor: 0.002
+  cursorScaleMultiplier: 25
+  customTracer: {fileID: 0}
+  customCursor: {fileID: 0}
 --- !u!114 &759740583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,7 +569,7 @@ MonoBehaviour:
   grabToggleButton: 7
   useToggleButton: 3
   uiClickButton: 3
-  menuToggleButton: 12
+  menuToggleButton: 14
   axisFidelity: 1
   triggerClickThreshold: 1
   gripClickThreshold: 1
@@ -596,11 +590,34 @@ MonoBehaviour:
   buttonOneTouched: 0
   buttonTwoPressed: 0
   buttonTwoTouched: 0
+  startMenuPressed: 0
   pointerPressed: 0
   grabPressed: 0
   usePressed: 0
   uiClickPressed: 0
   menuPressed: 0
+--- !u!114 &759740584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 759740580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ec704cceb26f6f49b6c900fc83d8d18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableTeleport: 1
+  pointerRenderer: {fileID: 759740582}
+  activationButton: 10
+  holdButtonToActivate: 1
+  activationDelay: 0
+  selectionButton: 10
+  selectOnPress: 0
+  interactWithObjects: 0
+  grabToPointerTip: 0
+  controller: {fileID: 0}
+  customOrigin: {fileID: 0}
 --- !u!1 &923606336
 GameObject:
   m_ObjectHideFlags: 0
@@ -725,7 +742,7 @@ MonoBehaviour:
   headsetPositionCompensation: 1
   targetListPolicy: {fileID: 0}
   navMeshLimitDistance: 0
---- !u!43 &1055380070
+--- !u!43 &1072624028
 Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1037,7 +1054,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 1194148992}
   - 20: {fileID: 1194148996}
-  - 114: {fileID: 1194148995}
   - 114: {fileID: 1194148994}
   - 92: {fileID: 1194148993}
   m_Layer: 0
@@ -1085,18 +1101,6 @@ MonoBehaviour:
   index: 0
   origin: {fileID: 0}
   isValid: 0
---- !u!114 &1194148995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11420968, guid: 4d293c8e162f3874b982baadd71153d2,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1194148991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be96d45fe21847a4a805d408a8015c84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!20 &1194148996
 Camera:
   m_ObjectHideFlags: 0
@@ -1185,7 +1189,7 @@ MeshFilter:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1248022599}
-  m_Mesh: {fileID: 1055380070}
+  m_Mesh: {fileID: 1072624028}
 --- !u!23 &1248022603
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1200,7 +1204,7 @@ MeshRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 1612984603}
+  - {fileID: 1672393595}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -1231,6 +1235,7 @@ MonoBehaviour:
   left: {fileID: 213614883}
   right: {fileID: 1115860551}
   objects: []
+  assignAllBeforeIdentified: 0
 --- !u!4 &1248022605
 Transform:
   m_ObjectHideFlags: 0
@@ -1454,6 +1459,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1485499906}
   - 114: {fileID: 1485499908}
+  - 114: {fileID: 1485499909}
   - 114: {fileID: 1485499907}
   m_Layer: 0
   m_Name: LeftController
@@ -1483,29 +1489,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1485499905}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 408a45c3d6ea5804fa3bcaaaf8251ab5, type: 3}
+  m_Script: {fileID: 11500000, guid: 7fc65878c7102524bb8c2bcfbefff497, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableTeleport: 1
-  controller: {fileID: 0}
-  pointerOriginTransform: {fileID: 0}
-  pointerMaterial: {fileID: 0}
-  pointerHitColor: {r: 0, g: 0.5, b: 0, a: 1}
-  pointerMissColor: {r: 0.8, g: 0, b: 0, a: 1}
-  holdButtonToActivate: 1
-  interactWithObjects: 0
-  grabToPointerTip: 0
-  activateDelay: 0
-  pointerVisibility: 0
+  playareaCursor: {fileID: 0}
   layersToIgnore:
     serializedVersion: 2
     m_Bits: 4
-  pointerThickness: 0.002
-  pointerLength: 100
-  showPointerTip: 1
-  customPointerCursor: {fileID: 0}
-  pointerCursorMatchTargetNormal: 0
-  pointerCursorRescaledAlongDistance: 0
+  validCollisionColor: {r: 0, g: 0.49803922, b: 0, a: 1}
+  invalidCollisionColor: {r: 0.8, g: 0, b: 0, a: 1}
+  tracerVisibility: 0
+  cursorVisibility: 0
+  maximumLength: 100
+  scaleFactor: 0.002
+  cursorScaleMultiplier: 25
+  customTracer: {fileID: 0}
+  customCursor: {fileID: 0}
 --- !u!114 &1485499908
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1522,7 +1521,7 @@ MonoBehaviour:
   grabToggleButton: 7
   useToggleButton: 3
   uiClickButton: 3
-  menuToggleButton: 12
+  menuToggleButton: 14
   axisFidelity: 1
   triggerClickThreshold: 1
   gripClickThreshold: 1
@@ -1543,12 +1542,35 @@ MonoBehaviour:
   buttonOneTouched: 0
   buttonTwoPressed: 0
   buttonTwoTouched: 0
+  startMenuPressed: 0
   pointerPressed: 0
   grabPressed: 0
   usePressed: 0
   uiClickPressed: 0
   menuPressed: 0
---- !u!21 &1612984603
+--- !u!114 &1485499909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1485499905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ec704cceb26f6f49b6c900fc83d8d18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enableTeleport: 1
+  pointerRenderer: {fileID: 1485499907}
+  activationButton: 10
+  holdButtonToActivate: 1
+  activationDelay: 0
+  selectionButton: 10
+  selectOnPress: 0
+  interactWithObjects: 0
+  grabToPointerTip: 0
+  controller: {fileID: 0}
+  customOrigin: {fileID: 0}
+--- !u!21 &1672393595
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -1623,7 +1645,6 @@ MonoBehaviour:
   _head: {fileID: 1194148992}
   _ears: {fileID: 1133946736}
   wireframe: 0
-  flip: {fileID: 0}
 --- !u!124 &1696492063
 Behaviour:
   m_ObjectHideFlags: 0
@@ -1877,6 +1898,7 @@ MonoBehaviour:
   boundariesSDK: 1
   headsetSDK: 1
   controllerSDK: 1
+  autoManageScriptDefines: 1
   actualBoundaries: {fileID: 1248022599}
   actualHeadset: {fileID: 1696492060}
   actualLeftController: {fileID: 213614883}

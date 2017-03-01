@@ -67,7 +67,7 @@ namespace VRTK
 
         #region Unity Methods
 
-        private void Awake()
+        protected virtual void Awake()
         {
             if (Application.isPlaying)
             {
@@ -82,7 +82,7 @@ namespace VRTK
             }
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             //Keep track of pressed button and constantly invoke Hold event
             if (currentPress != -1)
@@ -361,10 +361,10 @@ namespace VRTK
     public class RadialMenuButton
     {
         public Sprite ButtonIcon;
-        public UnityEvent OnClick;
-        public UnityEvent OnHold;
-        public UnityEvent OnHoverEnter;
-        public UnityEvent OnHoverExit;
+        public UnityEvent OnClick = new UnityEvent();
+        public UnityEvent OnHold = new UnityEvent();
+        public UnityEvent OnHoverEnter = new UnityEvent();
+        public UnityEvent OnHoverExit = new UnityEvent();
     }
 
     public enum ButtonEvent

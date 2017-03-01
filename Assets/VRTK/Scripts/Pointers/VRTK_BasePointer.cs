@@ -1,7 +1,8 @@
-﻿// Base Pointer|Pointers|10020
+﻿// Base Pointer|Pointers|10021
 namespace VRTK
 {
     using UnityEngine;
+    using System;
 #if UNITY_5_5_OR_NEWER
     using UnityEngine.AI;
 #endif
@@ -14,6 +15,7 @@ namespace VRTK
     ///
     /// As this is an abstract class, it cannot be applied directly to a game object and performs no logic.
     /// </remarks>
+    [Obsolete("`VRTK_BasePointer` has been replaced with `VRTK_Pointer`. This script will be removed in a future version of VRTK.")]
     public abstract class VRTK_BasePointer : VRTK_DestinationMarker
     {
         /// <summary>
@@ -29,12 +31,28 @@ namespace VRTK
             Always_Off
         }
 
+        [Serializable]
+        public sealed class PointerOriginSmoothingSettings
+        {
+            [Tooltip("Whether or not to smooth the position of the pointer origin when positioning the pointer tip.")]
+            public bool smoothsPosition;
+            [Tooltip("The maximum allowed distance between the unsmoothed pointer origin and the smoothed pointer origin per frame to use for smoothing.")]
+            public float maxAllowedPerFrameDistanceDifference = 0.003f;
+
+            [Tooltip("Whether or not to smooth the rotation of the pointer origin when positioning the pointer tip.")]
+            public bool smoothsRotation;
+            [Tooltip("The maximum allowed angle between the unsmoothed pointer origin and the smoothed pointer origin per frame to use for smoothing.")]
+            public float maxAllowedPerFrameAngleDifference = 1.5f;
+        }
+
         [Header("Base Pointer Settings", order = 2)]
 
         [Tooltip("The controller that will be used to toggle the pointer. If the script is being applied onto a controller then this parameter can be left blank as it will be auto populated by the controller the script is on at runtime.")]
         public VRTK_ControllerEvents controller = null;
         [Tooltip("A custom transform to use as the origin of the pointer. If no pointer origin transform is provided then the transform the script is attached to is used.")]
         public Transform pointerOriginTransform = null;
+        [Tooltip("Specifies the smoothing to be applied to the pointer origin when positioning the pointer tip.")]
+        public PointerOriginSmoothingSettings pointerOriginSmoothingSettings = new PointerOriginSmoothingSettings();
         [Tooltip("The material to use on the rendered version of the pointer. If no material is selected then the default `WorldPointer` material will be used.")]
         public Material pointerMaterial;
         [Tooltip("The colour of the beam when it is colliding with a valid target. It can be set to a different colour for each controller.")]
@@ -73,6 +91,8 @@ namespace VRTK
         private bool attachedToInteractorAttachPoint = false;
         private float savedBeamLength = 0f;
         private VRTK_InteractGrab controllerGrabScript;
+        private GameObject pointerOriginTransformFollowGameObject;
+        private VRTK_TransformFollow pointerOriginTransformFollow;
 
         /// <summary>
         /// The IsActive method is used to determine if the pointer currently active.
@@ -118,9 +138,10 @@ namespace VRTK
         {
             base.OnEnable();
 
-            pointerOriginTransform = (pointerOriginTransform == null ? VRTK_SDK_Bridge.GenerateControllerPointerOrigin() : pointerOriginTransform);
+            pointerOriginTransform = (pointerOriginTransform == null ? VRTK_SDK_Bridge.GenerateControllerPointerOrigin(gameObject) : pointerOriginTransform);
 
             AttemptSetController();
+            CreatePointerOriginTransformFollow();
 
             var tmpMaterial = Resources.Load("WorldPointer") as Material;
             if (pointerMaterial != null)
@@ -131,8 +152,7 @@ namespace VRTK
             pointerMaterial = new Material(tmpMaterial);
             pointerMaterial.color = pointerMissColor;
 
-            var fetchedPlayAreaCursor = GetComponent<VRTK_PlayAreaCursor>();
-            playAreaCursor = (fetchedPlayAreaCursor ?? fetchedPlayAreaCursor);
+            playAreaCursor = GetComponent<VRTK_PlayAreaCursor>();
         }
 
         protected override void OnDisable()
@@ -145,13 +165,9 @@ namespace VRTK
             pointerContactTarget = null;
             destinationPosition = Vector3.zero;
 
-            if (controller)
-            {
-                controller.AliasPointerOn -= new ControllerInteractionEventHandler(EnablePointerBeam);
-                controller.AliasPointerOff -= new ControllerInteractionEventHandler(DisablePointerBeam);
-                controller.AliasPointerSet -= new ControllerInteractionEventHandler(SetPointerDestination);
-            }
+            AliasRegistration(false);
             controllerGrabScript = null;
+            Destroy(pointerOriginTransformFollowGameObject);
         }
 
         protected virtual void Start()
@@ -161,40 +177,63 @@ namespace VRTK
 
         protected virtual void Update()
         {
+        }
+
+        protected virtual void FixedUpdate()
+        {
             if (interactWithObjects && objectInteractor && objectInteractor.activeInHierarchy)
             {
                 UpdateObjectInteractor();
             }
+
+            if (pointerOriginTransformFollow.isActiveAndEnabled)
+            {
+                UpdatePointerOriginTransformFollow();
+            }
         }
 
-        protected virtual Vector3 GetOriginPosition()
+        protected virtual void AliasRegistration(bool state)
         {
-            return (pointerOriginTransform ? pointerOriginTransform.position : transform.position);
+            if (controller)
+            {
+                if (state)
+                {
+                    controller.AliasPointerOn += new ControllerInteractionEventHandler(EnablePointerBeam);
+                    controller.AliasPointerOff += new ControllerInteractionEventHandler(DisablePointerBeam);
+                    controller.AliasPointerSet += new ControllerInteractionEventHandler(SetPointerDestination);
+                }
+                else
+                {
+                    controller.AliasPointerOn -= new ControllerInteractionEventHandler(EnablePointerBeam);
+                    controller.AliasPointerOff -= new ControllerInteractionEventHandler(DisablePointerBeam);
+                    controller.AliasPointerSet -= new ControllerInteractionEventHandler(SetPointerDestination);
+                }
+            }
         }
 
-        protected virtual Vector3 GetOriginLocalPosition()
+        protected virtual void OnValidate()
         {
-            return (pointerOriginTransform ? pointerOriginTransform.localPosition : Vector3.zero);
+            pointerOriginSmoothingSettings.maxAllowedPerFrameDistanceDifference = Mathf.Max(0.0001f, pointerOriginSmoothingSettings.maxAllowedPerFrameDistanceDifference);
+            pointerOriginSmoothingSettings.maxAllowedPerFrameAngleDifference = Mathf.Max(0.0001f, pointerOriginSmoothingSettings.maxAllowedPerFrameAngleDifference);
         }
 
-        protected virtual Vector3 GetOriginForward()
+        protected Transform GetOrigin(bool smoothed = true)
         {
-            return (pointerOriginTransform ? pointerOriginTransform.forward : transform.forward);
-        }
-
-        protected virtual Quaternion GetOriginRotation()
-        {
-            return (pointerOriginTransform ? pointerOriginTransform.rotation : transform.rotation);
-        }
-
-        protected virtual Quaternion GetOriginLocalRotation()
-        {
-            return (pointerOriginTransform ? pointerOriginTransform.localRotation : Quaternion.identity);
+            return smoothed && isActive ? pointerOriginTransformFollow.gameObjectToChange.transform : (pointerOriginTransform == null ? transform : pointerOriginTransform);
         }
 
         protected virtual void UpdateObjectInteractor()
         {
             objectInteractor.transform.position = destinationPosition;
+        }
+
+        protected virtual void UpdatePointerOriginTransformFollow()
+        {
+            pointerOriginTransformFollow.gameObjectToFollow = (pointerOriginTransform == null ? transform : pointerOriginTransform).gameObject;
+            pointerOriginTransformFollow.smoothsPosition = pointerOriginSmoothingSettings.smoothsPosition;
+            pointerOriginTransformFollow.maxAllowedPerFrameDistanceDifference = pointerOriginSmoothingSettings.maxAllowedPerFrameDistanceDifference;
+            pointerOriginTransformFollow.smoothsRotation = pointerOriginSmoothingSettings.smoothsRotation;
+            pointerOriginTransformFollow.maxAllowedPerFrameAngleDifference = pointerOriginSmoothingSettings.maxAllowedPerFrameAngleDifference;
         }
 
         protected virtual void InitPointer()
@@ -415,6 +454,15 @@ namespace VRTK
             objectInteractor.SetActive(false);
         }
 
+        protected virtual void CreatePointerOriginTransformFollow()
+        {
+            pointerOriginTransformFollowGameObject = new GameObject(string.Format("[{0}]BasePointer_Origin_Smoothed", gameObject.name));
+            pointerOriginTransformFollowGameObject.SetActive(false);
+            pointerOriginTransformFollow = pointerOriginTransformFollowGameObject.AddComponent<VRTK_TransformFollow>();
+            pointerOriginTransformFollow.followsScale = false;
+            UpdatePointerOriginTransformFollow();
+        }
+
         protected virtual float OverrideBeamLength(float currentLength)
         {
             if (!controllerGrabScript || !controllerGrabScript.GetGrabbedObject())
@@ -448,9 +496,7 @@ namespace VRTK
         {
             if (controller)
             {
-                controller.AliasPointerOn += new ControllerInteractionEventHandler(EnablePointerBeam);
-                controller.AliasPointerOff += new ControllerInteractionEventHandler(DisablePointerBeam);
-                controller.AliasPointerSet += new ControllerInteractionEventHandler(SetPointerDestination);
+                AliasRegistration(true);
 
                 controllerGrabScript = controller.GetComponent<VRTK_InteractGrab>();
 
@@ -477,7 +523,7 @@ namespace VRTK
             interactableObject = target.GetComponent<VRTK_InteractableObject>();
             bool cannotUseBecauseNotGrabbed = (interactableObject && interactableObject.useOnlyIfGrabbed && !interactableObject.IsGrabbed());
 
-            if (PointerActivatesUseAction(interactableObject) && interactableObject.holdButtonToUse && !cannotUseBecauseNotGrabbed)
+            if (PointerActivatesUseAction(interactableObject) && interactableObject.holdButtonToUse && !cannotUseBecauseNotGrabbed && interactableObject.usingState == 0)
             {
                 interactableObject.StartUsing(controller.gameObject);
                 interactableObject.usingState++;
@@ -506,6 +552,12 @@ namespace VRTK
                 TogglePointer(true);
                 isActive = true;
                 destinationSetActive = true;
+
+                if (pointerOriginTransformFollowGameObject != null)
+                {
+                    pointerOriginTransformFollowGameObject.SetActive(true);
+                    pointerOriginTransformFollow.Follow();
+                }
             }
         }
 
@@ -523,6 +575,11 @@ namespace VRTK
             TogglePointer(false);
             isActive = false;
             beamEnabledState = 0;
+
+            if (pointerOriginTransformFollowGameObject != null)
+            {
+                pointerOriginTransformFollowGameObject.SetActive(false);
+            }
         }
     }
 }
