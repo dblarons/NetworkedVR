@@ -57,5 +57,16 @@ namespace Assets.Scripts {
 
       return bytes;
     }
+
+    public void SendMessage(byte[] bytes) {
+      List<NetConnection> all = s_server.Connections;
+      if (all.Count > 0) {
+        Debug.Log("LOG: Server is sending the message to " + all.Count + " clients");
+
+        NetOutgoingMessage om = s_server.CreateMessage();
+        om.Write(bytes);
+        s_server.SendMessage(om, all, NetDeliveryMethod.UnreliableSequenced, 0);
+      }
+    }
   }
 }

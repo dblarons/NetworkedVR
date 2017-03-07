@@ -1,5 +1,4 @@
-﻿using HW;
-using Lidgren.Network;
+﻿using Lidgren.Network;
 using UnityEngine;
 
 namespace Assets.Scripts {
@@ -16,6 +15,48 @@ namespace Assets.Scripts {
     public void Connect(string host = "localhost", int port = 14242) {
 		  NetOutgoingMessage hail = s_client.CreateMessage("This is the hail message");
 		  s_client.Connect(host, port, hail);
+    }
+
+    public byte[] Read() {
+      NetIncomingMessage im = s_client.ReadMessage();
+      if (im == null) {
+        return null;
+      }
+
+      byte[] bytes = null;
+      switch (im.MessageType) {
+        case NetIncomingMessageType.DebugMessage:
+        case NetIncomingMessageType.ErrorMessage:
+        case NetIncomingMessageType.WarningMessage:
+        case NetIncomingMessageType.VerboseDebugMessage:
+          string text = im.ReadString();
+          Debug.Log(text);
+          break;
+
+        case NetIncomingMessageType.StatusChanged:
+          NetConnectionStatus status = (NetConnectionStatus)im.ReadByte();
+
+          string reason = im.ReadString();
+          Debug.Log(NetUtility.ToHexString(im.SenderConnection.RemoteUniqueIdentifier) + " " + status + ": " + reason);
+
+          if (status == NetConnectionStatus.Connected) {
+            Debug.Log("Remote hail: " + im.SenderConnection.RemoteHailMessage.ReadString());
+          }
+          break;
+
+        case NetIncomingMessageType.Data:
+          // incoming chat message from a client
+          bytes = im.ReadBytes(im.LengthBytes);
+          break;
+
+        default:
+          Debug.Log("Unhandled type: " + im.MessageType + " " + im.LengthBytes + " bytes " + im.DeliveryMethod + "|" + im.SequenceChannel);
+          break;
+      }
+
+      s_client.Recycle(im);
+
+      return bytes;
     }
 
     public void SendMessage(byte[] bytes) {
