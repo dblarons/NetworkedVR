@@ -1,4 +1,4 @@
-namespace HW;
+namespace NetworkingFBS;
 
 struct Vec3 {
   x:float;

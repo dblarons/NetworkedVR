@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Assets.Scripts {
   class UDPServer {
-    private static readonly int MAX_CONNECTIONS = 100;
+    static readonly int MAX_CONNECTIONS = 100;
 
     NetServer s_server;
 
