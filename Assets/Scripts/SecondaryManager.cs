@@ -38,7 +38,6 @@ namespace Assets.Scripts {
           updateLerp = update;
           var nextPosition = update.next.Position;
           logger.Log("LOG (client): Received position from client: " + nextPosition.X + " " + nextPosition.Y + " " + nextPosition.Z);
-          logger.Log("LOG (client): Set object position on Client");
         }
       }
 
@@ -48,6 +47,7 @@ namespace Assets.Scripts {
         Vector3 lastPosition = new Vector3(lastPositionFB.X, lastPositionFB.Y, lastPositionFB.Z);
         Vector3 nextPosition = new Vector3(nextPositionFB.X, nextPositionFB.Y, nextPositionFB.Z);
         store.GetCube().transform.position = Vector3.Lerp(lastPosition, nextPosition, (nextUpdate - Time.time) / UPDATE_RATE);
+        logger.Log("LOG (client): Lerped object position on Client");
       }
     }
   }
