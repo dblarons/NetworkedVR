@@ -38,7 +38,7 @@ namespace Assets.Scripts {
       Quaternion toRotation = new Quaternion(toRotationFB.X, toRotationFB.Y, toRotationFB.Z, toRotationFB.W);
 
       obj.transform.position = Vector3.Lerp(fromPosition, toPosition, t);
-      obj.transform.rotation = Quaternion.Lerp(fromRotation, toRotation, t);
+      // obj.transform.rotation = Quaternion.Lerp(fromRotation, toRotation, t);
     }
   }
 }
