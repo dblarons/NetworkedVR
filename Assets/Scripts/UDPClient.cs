@@ -12,7 +12,7 @@ namespace Assets.Scripts {
       s_client.Start();
     }
 
-    public void Connect(string host = "localhost", int port = 14242) {
+    public void Connect(string host = "192.168.1.10", int port = 14242) {
 		  NetOutgoingMessage hail = s_client.CreateMessage("This is the hail message");
 		  s_client.Connect(host, port, hail);
     }
