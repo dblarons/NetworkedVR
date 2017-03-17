@@ -1,0 +1,22 @@
+namespace NetworkingFBS;
+
+struct Position {
+  x:float;
+  y:float;
+  z:float;
+}
+
+struct Rotation {
+  x:float;
+  y:float;
+  z:float;
+  w:float;
+}
+
+table Action {
+  guid:string;
+  position:Position;
+  rotation:Rotation;
+}
+
+root_type Action;
