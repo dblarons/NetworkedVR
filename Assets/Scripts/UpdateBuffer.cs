@@ -21,6 +21,11 @@ namespace Assets.Scripts {
       queue = new NetQueue<T>(CAPACITY);
     }
 
+    /**
+     * Given a new item, add it to the queue if the count is under capacity. 
+     * If count is at capacity, dequeue and throw away the oldest item first before
+     * queuing the new item.
+     */
     public void Enqueue(T item) {
       if (queue.Count == CAPACITY) {
         T throwaway;
@@ -30,6 +35,12 @@ namespace Assets.Scripts {
       queue.Enqueue(item);
     }
 
+    /**
+     * First, dequeue an item from the queue. If no item can be dequeued, we cannot
+     * update the world state, so return null. If an item can be dequeued, we return
+     * the updated state along with a reference to the last update we performed. We
+     * then update the last item reference to the newest item we dequeued.
+     */
     public UpdateLerp<T> Dequeue() {
       T nextUpdate = null;
       queue.TryDequeue(out nextUpdate);
