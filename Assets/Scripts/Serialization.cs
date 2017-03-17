@@ -10,11 +10,10 @@ namespace Assets.Scripts {
 
       FlatBufferBuilder builder = new FlatBufferBuilder(1024);
       var guid = builder.CreateString("TODO: Put GUID here");
-      var flatPosition = Position.CreatePosition(builder, position.x, position.y, position.z);
-      var flatRotation = Rotation.CreateRotation(builder, rotation.x, rotation.y, rotation.z, rotation.w);
 
       Action.StartAction(builder);
-      Action.AddPosition(builder, flatPosition);
+      Action.AddPosition(builder, Position.CreatePosition(builder, position.x, position.y, position.z));
+      Action.AddRotation(builder, Rotation.CreateRotation(builder, rotation.x, rotation.y, rotation.z, rotation.w));
       Action.AddGuid(builder, guid);
       var action = Action.EndAction(builder);
       builder.Finish(action.Value);
