@@ -1,14 +1,22 @@
 namespace NetworkingFBS;
 
-struct Vec3 {
+struct Position {
   x:float;
   y:float;
   z:float;
 }
 
+struct Rotation {
+  x:float;
+  y:float;
+  z:float;
+  w:float;
+}
+
 table Action {
-  name:string;
-  position:Vec3;
+  guid:string;
+  position:Position;
+  rotation:Rotation;
 }
 
 root_type Action;

@@ -20,27 +20,8 @@ namespace Assets.Scripts {
     void Update() {
       if (nextSend < Time.time) {
         nextSend = Time.time + SEND_RATE;
-
-        var cubePosition = store.GetCube().transform.position;
-
-        logger.Log("LOG (server): Got the cube position: " + cubePosition.x + " " + cubePosition.y + " " + cubePosition.z);
-
-        FlatBufferBuilder builder = new FlatBufferBuilder(1024);
-        var actionName = builder.CreateString("my action");
-        var position = Vec3.CreateVec3(builder, cubePosition.x, cubePosition.y, cubePosition.z);
-
-        // Build action.
-        Action.StartAction(builder);
-        Action.AddPosition(builder, position);
-        Action.AddName(builder, actionName);
-        var action = Action.EndAction(builder);
-        builder.Finish(action.Value);
-
-        byte[] bytes = builder.SizedByteArray();
-
         logger.Log("LOG (server): Sending the action");
-
-        udpServer.SendMessage(bytes);
+        udpServer.SendMessage(Serialization.ToBytes(store.GetCube()));
       }
     }
   }

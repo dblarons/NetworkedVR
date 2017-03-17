@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using NetworkingFBS;
-using FlatBuffers;
 
 namespace Assets.Scripts {
   public class Networking : MonoBehaviour {
