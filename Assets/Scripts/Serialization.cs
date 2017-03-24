@@ -14,9 +14,10 @@ namespace Assets.Scripts {
       var guid = builder.CreateString(networkedObj.guid);
 
       ObjectState.StartObjectState(builder);
+      ObjectState.AddGuid(builder, guid);
+      ObjectState.AddPrefabId(builder, (int)networkedObj.prefabId);
       ObjectState.AddPosition(builder, Position.CreatePosition(builder, position.x, position.y, position.z));
       ObjectState.AddRotation(builder, Rotation.CreateRotation(builder, rotation.x, rotation.y, rotation.z, rotation.w));
-      ObjectState.AddGuid(builder, guid);
       return ObjectState.EndObjectState(builder);
     }
 

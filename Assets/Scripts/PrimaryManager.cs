@@ -21,8 +21,8 @@ namespace Assets.Scripts {
 
     void Update() {
       if (!isInitialized) {
-        var cube = Instantiate(prefabLibrary.cube, new Vector3(-0.1f, 0.5f, 1.0f), Quaternion.identity);
-        var sphere = Instantiate(prefabLibrary.sphere, new Vector3(0.1f, 0.5f, 1.0f), Quaternion.identity);
+        var cube = Instantiate(prefabLibrary.cube, new Vector3(-0.1f, 0.5f, 2.6f), Quaternion.identity);
+        var sphere = Instantiate(prefabLibrary.sphere, new Vector3(0.1f, 0.5f, 2.6f), Quaternion.identity);
         localObjectStore.RegisterPrimary(cube, PrefabId.CUBE);
         localObjectStore.RegisterPrimary(sphere, PrefabId.SPHERE);
 

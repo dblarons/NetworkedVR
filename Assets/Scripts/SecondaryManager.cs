@@ -15,8 +15,6 @@ namespace Assets.Scripts {
     float UPDATE_RATE = 0.033F;
     float nextUpdate = 0.0F;
 
-    bool isInitialized;
-
     void Start() {
       udpClient = new UDPClient();
       udpClient.Connect();
@@ -48,7 +46,11 @@ namespace Assets.Scripts {
           var lastPrimary = worldLerp.last.GetPrimaries(i);
           var nextPrimary = worldLerp.next.GetPrimaries(i);
 
-          if (lastPrimary.Guid != nextPrimary.Guid) {
+          logger.Log("Last primary was: " + lastPrimary);
+          logger.Log("Next primary was: " + nextPrimary);
+          logger.Log("Last primary guid was: " + lastPrimary.Guid);
+          logger.Log("Next primary guid was: " + nextPrimary.Guid);
+          if (!lastPrimary.Guid.Equals(nextPrimary.Guid)) {
             // TODO(dblarons): See if this case happens only when new objects are created.
             logger.LogError("GUID MISMATCH", "GUIDs did not match during primary lerping");
           }
