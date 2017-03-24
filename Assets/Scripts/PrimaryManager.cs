@@ -4,24 +4,36 @@ using FlatBuffers;
 
 namespace Assets.Scripts {
   public class PrimaryManager : MonoBehaviour {
+    public LocalObjectStore localObjectStore;
+    public PrefabLibrary prefabLibrary;
+
     static ILogger logger = Debug.logger;
     UDPServer udpServer;
-    public LocalObjectStore store;
 
     float SEND_RATE = 0.033F;
     float nextSend = 0.0F;
 
-    bool isInitialized;
+    bool isInitialized = false;
 
     void Start() {
       udpServer = new UDPServer();
     }
 
     void Update() {
+      if (!isInitialized) {
+        var cube = Instantiate(prefabLibrary.cube, new Vector3(-0.1f, 0.5f, 1.0f), Quaternion.identity);
+        var sphere = Instantiate(prefabLibrary.sphere, new Vector3(0.1f, 0.5f, 1.0f), Quaternion.identity);
+        localObjectStore.RegisterPrimary(cube, PrefabId.CUBE);
+        localObjectStore.RegisterPrimary(sphere, PrefabId.SPHERE);
+
+        isInitialized = true;
+      }
+
       if (nextSend < Time.time) {
         nextSend = Time.time + SEND_RATE;
-        logger.Log("LOG (server): Sending the action");
-        udpServer.SendMessage(Serialization.ToBytes(store.GetCube()));
+        logger.Log("LOG (server): Sending world update");
+        
+        udpServer.SendMessage(Serialization.ToBytes(localObjectStore.GetPrimaries(), localObjectStore.GetSecondaries()));
       }
     }
   }

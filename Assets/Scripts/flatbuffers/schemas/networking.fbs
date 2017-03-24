@@ -13,10 +13,16 @@ struct Rotation {
   w:float;
 }
 
-table Action {
+table ObjectState {
   guid:string;
+  prefabId:int;
   position:Position;
   rotation:Rotation;
 }
 
-root_type Action;
+table WorldUpdate {
+  primaries:[ObjectState];
+  secondaries:[ObjectState];
+}
+
+root_type WorldUpdate;
