@@ -32,7 +32,7 @@ namespace Assets.Scripts {
       if (nextSend < Time.time) {
         nextSend = Time.time + SEND_RATE;
         logger.Log("LOG (server): Sending world update");
-        
+
         udpServer.SendMessage(Serialization.ToBytes(localObjectStore.GetPrimaries(), localObjectStore.GetSecondaries()));
       }
     }

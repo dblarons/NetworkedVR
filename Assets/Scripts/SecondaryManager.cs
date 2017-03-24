@@ -46,10 +46,6 @@ namespace Assets.Scripts {
           var lastPrimary = worldLerp.last.GetPrimaries(i);
           var nextPrimary = worldLerp.next.GetPrimaries(i);
 
-          logger.Log("Last primary was: " + lastPrimary);
-          logger.Log("Next primary was: " + nextPrimary);
-          logger.Log("Last primary guid was: " + lastPrimary.Guid);
-          logger.Log("Next primary guid was: " + nextPrimary.Guid);
           if (!lastPrimary.Guid.Equals(nextPrimary.Guid)) {
             // TODO(dblarons): See if this case happens only when new objects are created.
             logger.LogError("GUID MISMATCH", "GUIDs did not match during primary lerping");

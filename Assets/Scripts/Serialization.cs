@@ -24,17 +24,17 @@ namespace Assets.Scripts {
     public static byte[] ToBytes(List<NetworkedObject> primaries, List<NetworkedObject> secondaries) {
       var builder = new FlatBufferBuilder(1024);
 
-      WorldUpdate.StartPrimariesVector(builder, primaries.Count);
-      foreach (var primary in primaries) {
-        ToFlatbuffer(builder, primary);
+      var primariesOffsets = new Offset<ObjectState>[primaries.Count];
+      for (var i = 0; i < primaries.Count; i++) {
+         primariesOffsets[i] = ToFlatbuffer(builder, primaries[i]);
       }
-      var primariesOffset = builder.EndVector();
+      var primariesOffset = WorldUpdate.CreatePrimariesVector(builder, primariesOffsets);
 
-      WorldUpdate.StartSecondariesVector(builder, secondaries.Count);
-      foreach (var secondary in secondaries) {
-        ToFlatbuffer(builder, secondary);
+      var secondariesOffsets = new Offset<ObjectState>[secondaries.Count];
+      for (var i = 0; i < secondaries.Count; i++) {
+         secondariesOffsets[i] = ToFlatbuffer(builder, secondaries[i]);
       }
-      var secondariesOffset = builder.EndVector();
+      var secondariesOffset = WorldUpdate.CreatePrimariesVector(builder, primariesOffsets);
 
       WorldUpdate.StartWorldUpdate(builder);
 

@@ -42,7 +42,12 @@ namespace Assets.Scripts {
     }
 
     public GameObject GetSecondary(string guid) {
-      return secondaryLookup[guid].obj;
+      NetworkedObject secondaryObject = null;
+      secondaryLookup.TryGetValue(guid, out secondaryObject);
+      if (secondaryObject == null) {
+        return null;
+      }
+      return secondaryObject.obj;
     }
 
     public List<NetworkedObject> GetPrimaries() {
