@@ -3,18 +3,6 @@ using System.Collections.Generic;
 using System;
 
 namespace Assets.Scripts {
-  public class NetworkedObject {
-    public GameObject obj { get; set; }
-    public string guid { get; set; }
-    public PrefabId prefabId { get; set; }
-
-    public NetworkedObject(GameObject obj, string guid, PrefabId prefabId) {
-      this.obj = obj;
-      this.guid = guid;
-      this.prefabId = prefabId;
-    }
-  }
-
   public class LocalObjectStore : MonoBehaviour {
     List<string> primaryIds;
     List<string> secondaryIds;
@@ -29,25 +17,25 @@ namespace Assets.Scripts {
       secondaryLookup = new Dictionary<string, NetworkedObject>();
     }
 
-    public string RegisterPrimary(GameObject obj, PrefabId prefabId) {
+    public string RegisterPrimary(NetworkedObject obj) {
       string guid = Guid.NewGuid().ToString();
       primaryIds.Add(guid);
-      primaryLookup.Add(guid, new NetworkedObject(obj, guid, prefabId));
+      primaryLookup.Add(guid, obj);
       return guid;
     }
 
-    public void RegisterSecondary(GameObject obj, string guid, PrefabId prefabId) {
+    public void RegisterSecondary(NetworkedObject obj, string guid) {
       secondaryIds.Add(guid);
-      secondaryLookup.Add(guid, new NetworkedObject(obj, guid, prefabId));
+      secondaryLookup.Add(guid, obj);
     }
 
-    public GameObject GetSecondary(string guid) {
+    public NetworkedObject GetSecondary(string guid) {
       NetworkedObject secondaryObject = null;
       secondaryLookup.TryGetValue(guid, out secondaryObject);
       if (secondaryObject == null) {
         return null;
       }
-      return secondaryObject.obj;
+      return secondaryObject;
     }
 
     public List<NetworkedObject> GetPrimaries() {

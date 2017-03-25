@@ -8,8 +8,8 @@ namespace Assets.Scripts {
     static ILogger logger = Debug.logger;
 
     public static Offset<ObjectState> ToFlatbuffer(FlatBufferBuilder builder, NetworkedObject networkedObj) {
-      var position = networkedObj.obj.transform.position;
-      var rotation = networkedObj.obj.transform.rotation;
+      var position = networkedObj.position;
+      var rotation = networkedObj.rotation;
 
       var guid = builder.CreateString(networkedObj.guid);
 
@@ -61,7 +61,7 @@ namespace Assets.Scripts {
       return Instantiate(prefab, position, rotation);
     }
 
-    public static void Lerp(GameObject obj, UpdateLerp<ObjectState> objectState, float t) {
+    public static void Lerp(NetworkedObject obj, UpdateLerp<ObjectState> objectState, float t) {
       var fromPositionFB = objectState.last.Position;
       var toPositionFB = objectState.next.Position;
       Vector3 fromPosition = new Vector3(fromPositionFB.X, fromPositionFB.Y, fromPositionFB.Z);
