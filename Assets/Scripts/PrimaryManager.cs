@@ -19,16 +19,14 @@ namespace Assets.Scripts {
     bool isInitialized = false;
 
     void Start() {
-      controller.GetComponent<VRTK_ControllerEvents>().TriggerPressed +=
-        new ControllerInteractionEventHandler(DoTriggerPressed);
-
+      controller.GetComponent<VRTK_ControllerEvents>().TriggerPressed += DoTriggerPressed;
       udpServer = new UDPServer();
     }
 
     void Update() {
       if (!isInitialized) {
-        localObjectStore.Instantiate(prefabLibrary.cube, new Vector3(-0.1f, 0.5f, 2.6f), Quaternion.identity);
-        localObjectStore.Instantiate(prefabLibrary.sphere, new Vector3(0.1f, 0.5f, 2.6f), Quaternion.identity);
+        localObjectStore.Instantiate(PrefabId.CUBE, new Vector3(-0.1f, 0.5f, 2.6f), Quaternion.identity);
+        localObjectStore.Instantiate(PrefabId.SPHERE, new Vector3(0.1f, 0.5f, 2.6f), Quaternion.identity);
 
         isInitialized = true;
       }
@@ -41,7 +39,7 @@ namespace Assets.Scripts {
     }
 
     void DoTriggerPressed(object sender, ControllerInteractionEventArgs e) {
-      localObjectStore.Instantiate(prefabLibrary.sphere, controller.transform.position, controller.transform.rotation);
+      localObjectStore.Instantiate(PrefabId.SPHERE, controller.transform.position, controller.transform.rotation);
     }
   }
 }

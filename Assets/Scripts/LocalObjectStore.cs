@@ -16,14 +16,15 @@ namespace Assets.Scripts {
     }
 
     /// <summary>
-    /// Mirror the Unity `Instantiate` API, but register the object in the primary store when it 
-    /// is instantiated.
+    /// Given a prefabId, look up the associated prefab, instantiate it, and register it in 
+    /// the primary store, identified by its GUID.
     /// </summary>
     /// <param name="prefab"></param>
     /// <param name="position"></param>
     /// <param name="rotation"></param>
-    public void Instantiate(GameObject prefab, Vector3 position, Quaternion rotation) {
-      GameObject obj = UnityEngine.Object.Instantiate(prefab, position, rotation);
+    public void Instantiate(PrefabId prefabId, Vector3 position, Quaternion rotation) {
+      GameObject prefab = prefabLibrary.lookup[prefabId];
+      GameObject obj = Instantiate(prefab, position, rotation);
       RegisterPrimary(obj.GetComponent<NetworkedObject>());
     }
 
@@ -37,16 +38,25 @@ namespace Assets.Scripts {
     /// <param name="guid"></param>
     public void Instantiate(PrefabId prefabId, Vector3 position, Quaternion rotation, string guid) {
       GameObject prefab = prefabLibrary.lookup[prefabId];
-      GameObject obj = UnityEngine.Object.Instantiate(prefab, position, rotation);
+      GameObject obj = Instantiate(prefab, position, rotation);
       RegisterSecondary(obj.GetComponent<NetworkedObject>(), guid);
     }
 
+    /// <summary>
+    /// Register a given object as a primary object and generate a GUID for it.
+    /// </summary>
+    /// <param name="obj"></param>
     public void RegisterPrimary(NetworkedObject obj) {
       string guid = Guid.NewGuid().ToString();
       obj.guid = guid;
       primaryLookup.Add(guid, obj);
     }
 
+    /// <summary>
+    /// Register an object as a secondary object and assign it a predefined GUID.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="guid"></param>
     public void RegisterSecondary(NetworkedObject obj, string guid) {
       secondaryLookup.Add(guid, obj);
       obj.guid = guid;
