@@ -56,9 +56,13 @@ namespace Assets.Scripts {
             logger.Log("New object was created");
             // Secondary copy does not exist yet. Create one and register it.
             var prefabId = (PrefabId)nextPrimary.PrefabId;
-            var prefab = prefabLibrary.lookup[prefabId];
-            var newSecondary = Serialization.Instantiate(prefab, nextPrimary);
-            localObjectStore.RegisterSecondary(newSecondary.GetComponent<NetworkedObject>(), nextPrimary.Guid);
+            var positionFB = nextPrimary.Position;
+            var rotationFB = nextPrimary.Rotation;
+
+            Vector3 position = new Vector3(positionFB.X, positionFB.Y, positionFB.Z);
+            Quaternion rotation = new Quaternion(rotationFB.X, rotationFB.Y, rotationFB.Z, rotationFB.W);
+
+            localObjectStore.Instantiate(prefabId, position, rotation, nextPrimary.Guid);
           } else {
             // Secondary copy exists. Lerp it.
             var objectLerp = new UpdateLerp<ObjectState>(lastPrimary, nextPrimary);

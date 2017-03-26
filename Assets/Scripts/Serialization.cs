@@ -51,16 +51,6 @@ namespace Assets.Scripts {
       return WorldUpdate.GetRootAsWorldUpdate(buffer);
     }
 
-    public static GameObject Instantiate(GameObject prefab, ObjectState objectState) {
-      var positionFB = objectState.Position;
-      var rotationFB = objectState.Rotation;
-
-      Vector3 position = new Vector3(positionFB.X, positionFB.Y, positionFB.Z);
-      Quaternion rotation = new Quaternion(rotationFB.X, rotationFB.Y, rotationFB.Z, rotationFB.W);
-
-      return Instantiate(prefab, position, rotation);
-    }
-
     public static void Lerp(NetworkedObject obj, UpdateLerp<ObjectState> objectState, float t) {
       var fromPositionFB = objectState.last.Position;
       var toPositionFB = objectState.next.Position;

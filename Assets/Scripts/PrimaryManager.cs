@@ -27,10 +27,8 @@ namespace Assets.Scripts {
 
     void Update() {
       if (!isInitialized) {
-        var cube = Instantiate(prefabLibrary.cube, new Vector3(-0.1f, 0.5f, 2.6f), Quaternion.identity);
-        var sphere = Instantiate(prefabLibrary.sphere, new Vector3(0.1f, 0.5f, 2.6f), Quaternion.identity);
-        localObjectStore.RegisterPrimary(cube.GetComponent<NetworkedObject>());
-        localObjectStore.RegisterPrimary(sphere.GetComponent<NetworkedObject>());
+        localObjectStore.Instantiate(prefabLibrary.cube, new Vector3(-0.1f, 0.5f, 2.6f), Quaternion.identity);
+        localObjectStore.Instantiate(prefabLibrary.sphere, new Vector3(0.1f, 0.5f, 2.6f), Quaternion.identity);
 
         isInitialized = true;
       }
@@ -44,8 +42,7 @@ namespace Assets.Scripts {
     }
 
     void DoTriggerPressed(object sender, ControllerInteractionEventArgs e) {
-      var sphere = Instantiate(prefabLibrary.sphere, controller.transform.position, controller.transform.rotation);
-      localObjectStore.RegisterPrimary(sphere.GetComponent<NetworkedObject>());
+      localObjectStore.Instantiate(prefabLibrary.sphere, controller.transform.position, controller.transform.rotation);
     }
   }
 }
