@@ -7,24 +7,24 @@ namespace Assets.Scripts {
   public class Serializer : MonoBehaviour {
     static ILogger logger = Debug.logger;
 
-    public static Offset<Position> SerializePosition(FlatBufferBuilder builder, Vector3 position) {
-      return Position.CreatePosition(builder, position.x, position.y, position.z);
+    public static Offset<FlatVector3> SerializeVector3(FlatBufferBuilder builder, Vector3 vector) {
+      return FlatVector3.CreateFlatVector3(builder, vector.x, vector.y, vector.z);
     }
 
-    public static Vector3 DeserializePosition(Position position) {
-      return new Vector3(position.X, position.Y, position.Z);
+    public static Vector3 DeserializeVector3(FlatVector3 flatVector) {
+      return new Vector3(flatVector.X, flatVector.Y, flatVector.Z);
     }
 
-    public static Offset<Rotation> SerializeRotation(FlatBufferBuilder builder, Quaternion rotation) {
-      return Rotation.CreateRotation(builder, rotation.x, rotation.y, rotation.z, rotation.w);
+    public static Offset<FlatQuaternion> SerializeQuaternion(FlatBufferBuilder builder, Quaternion quaternion) {
+      return FlatQuaternion.CreateFlatQuaternion(builder, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
     }
 
-    public static Quaternion DeserializeRotation(Rotation rotation) {
-      return new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
+    public static Quaternion DeserializeQuaternion(FlatQuaternion flatQuaternion) {
+      return new Quaternion(flatQuaternion.X, flatQuaternion.Y, flatQuaternion.Z, flatQuaternion.W);
     }
 
-    public static Offset<ObjectState>[] SerializeNetworkedObjects(FlatBufferBuilder builder, List<NetworkedObject> objs) {
-      var offsets = new Offset<ObjectState>[objs.Count];
+    public static Offset<FlatNetworkedObject>[] SerializeNetworkedObjects(FlatBufferBuilder builder, List<NetworkedObject> objs) {
+      var offsets = new Offset<FlatNetworkedObject>[objs.Count];
       for (var i = 0; i < objs.Count; i++) {
          offsets[i] = objs[i].Serialize(builder);
       }

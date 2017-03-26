@@ -1,28 +1,28 @@
 namespace NetworkingFBS;
 
-struct Position {
+struct FlatVector3 {
   x:float;
   y:float;
   z:float;
 }
 
-struct Rotation {
+struct FlatQuaternion {
   x:float;
   y:float;
   z:float;
   w:float;
 }
 
-table ObjectState {
+table FlatNetworkedObject {
   guid:string;
   prefabId:int;
-  position:Position;
-  rotation:Rotation;
+  position:FlatVector3;
+  rotation:FlatQuaternion;
 }
 
 table WorldUpdate {
-  primaries:[ObjectState];
-  secondaries:[ObjectState];
+  primaries:[FlatNetworkedObject];
+  secondaries:[FlatNetworkedObject];
 }
 
 root_type WorldUpdate;

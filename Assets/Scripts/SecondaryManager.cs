@@ -57,12 +57,12 @@ namespace Assets.Scripts {
 
             // Secondary copy does not exist yet. Create one and register it.
             var prefabId = (PrefabId)nextPrimary.PrefabId;
-            Vector3 position = Serializer.DeserializePosition(nextPrimary.Position);
-            Quaternion rotation = Serializer.DeserializeRotation(nextPrimary.Rotation);
+            Vector3 position = Serializer.DeserializeVector3(nextPrimary.Position);
+            Quaternion rotation = Serializer.DeserializeQuaternion(nextPrimary.Rotation);
             localObjectStore.Instantiate(prefabId, position, rotation, nextPrimary.Guid);
           } else {
             // Secondary copy exists. Lerp it.
-            var objectLerp = new StateTransition<ObjectState>(lastPrimary, nextPrimary);
+            var objectLerp = new StateTransition<FlatNetworkedObject>(lastPrimary, nextPrimary);
             secondaryObject.Lerp(objectLerp.last, objectLerp.next, (nextUpdate - Time.time) / UPDATE_RATE);
           }
         }

@@ -21,31 +21,31 @@ namespace Assets.Scripts {
 
     public PrefabId prefabId;
 
-    public Offset<ObjectState> Serialize(FlatBufferBuilder builder) {
+    public Offset<FlatNetworkedObject> Serialize(FlatBufferBuilder builder) {
       var guidStr = builder.CreateString(guid);
 
-      ObjectState.StartObjectState(builder);
-      ObjectState.AddGuid(builder, guidStr);
-      ObjectState.AddPrefabId(builder, (int)prefabId);
-      ObjectState.AddPosition(builder, Serializer.SerializePosition(builder, position));
-      ObjectState.AddRotation(builder, Serializer.SerializeRotation(builder, rotation));
-      return ObjectState.EndObjectState(builder);
+      FlatNetworkedObject.StartFlatNetworkedObject(builder);
+      FlatNetworkedObject.AddGuid(builder, guidStr);
+      FlatNetworkedObject.AddPrefabId(builder, (int)prefabId);
+      FlatNetworkedObject.AddPosition(builder, Serializer.SerializeVector3(builder, position));
+      FlatNetworkedObject.AddRotation(builder, Serializer.SerializeQuaternion(builder, rotation));
+      return FlatNetworkedObject.EndFlatNetworkedObject(builder);
     }
 
-    public void Lerp(ObjectState last, ObjectState next, float t) {
+    public void Lerp(FlatNetworkedObject last, FlatNetworkedObject next, float t) {
       Lerp(last.Position, next.Position, t);
       Lerp(last.Rotation, next.Rotation, t);
     }
 
-    public void Lerp(Position last, Position next, float t) {
-      Vector3 from = Serializer.DeserializePosition(last);
-      Vector3 to = Serializer.DeserializePosition(next);
+    public void Lerp(FlatVector3 last, FlatVector3 next, float t) {
+      Vector3 from = Serializer.DeserializeVector3(last);
+      Vector3 to = Serializer.DeserializeVector3(next);
       transform.position = Vector3.Lerp(from, to, t);
     }
 
-    public void Lerp(Rotation last, Rotation next, float t) {
-      Quaternion from = Serializer.DeserializeRotation(last);
-      Quaternion to = Serializer.DeserializeRotation(next);
+    public void Lerp(FlatQuaternion last, FlatQuaternion next, float t) {
+      Quaternion from = Serializer.DeserializeQuaternion(last);
+      Quaternion to = Serializer.DeserializeQuaternion(next);
       transform.rotation = Quaternion.Lerp(from, to, t);
     }
   }
