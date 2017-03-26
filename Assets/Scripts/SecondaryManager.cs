@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using NetworkingFBS;
+using Assets.Scripts.Buffering;
 
 namespace Assets.Scripts {
   public class SecondaryManager : MonoBehaviour {
@@ -8,8 +9,8 @@ namespace Assets.Scripts {
     public LocalObjectStore localObjectStore;
 
     UDPClient udpClient;
-    UpdateBuffer<WorldUpdate> updateBuffer;
-    UpdateLerp<WorldUpdate> worldLerp;
+    StateBuffer<WorldUpdate> updateBuffer;
+    StateTransition<WorldUpdate> worldLerp;
 
     float UPDATE_RATE = 0.033F;
     float nextUpdate = 0.0F;
@@ -18,7 +19,7 @@ namespace Assets.Scripts {
       udpClient = new UDPClient();
       udpClient.Connect();
 
-      updateBuffer = new UpdateBuffer<WorldUpdate>();
+      updateBuffer = new StateBuffer<WorldUpdate>();
       worldLerp = null;
     }
 
@@ -30,7 +31,7 @@ namespace Assets.Scripts {
 
       // When a lerping time is up, we get the newest position to lerp towards.
       if (nextUpdate < Time.time) {
-        UpdateLerp<WorldUpdate> update = updateBuffer.Dequeue();
+        StateTransition<WorldUpdate> update = updateBuffer.Dequeue();
         if (update != null) {
           worldLerp = update;
         }
@@ -61,7 +62,7 @@ namespace Assets.Scripts {
             localObjectStore.Instantiate(prefabId, position, rotation, nextPrimary.Guid);
           } else {
             // Secondary copy exists. Lerp it.
-            var objectLerp = new UpdateLerp<ObjectState>(lastPrimary, nextPrimary);
+            var objectLerp = new StateTransition<ObjectState>(lastPrimary, nextPrimary);
             secondaryObject.Lerp(objectLerp.last, objectLerp.next, (nextUpdate - Time.time) / UPDATE_RATE);
           }
         }
