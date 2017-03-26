@@ -24,7 +24,7 @@ namespace Assets.Scripts {
     void Update() {
       byte[] bytes = udpClient.Read();
       if (bytes != null) {
-        updateBuffer.Enqueue(Serialization.FromBytes(bytes));
+        updateBuffer.Enqueue(Serializer.FromBytes(bytes));
       }
 
       // When a lerping time is up, we get the newest position to lerp towards.
@@ -52,19 +52,16 @@ namespace Assets.Scripts {
           var secondaryObject = localObjectStore.GetSecondary(nextPrimary.Guid);
           if (secondaryObject == null) {
             logger.Log("New object was created");
+
             // Secondary copy does not exist yet. Create one and register it.
             var prefabId = (PrefabId)nextPrimary.PrefabId;
-            var positionFB = nextPrimary.Position;
-            var rotationFB = nextPrimary.Rotation;
-
-            Vector3 position = new Vector3(positionFB.X, positionFB.Y, positionFB.Z);
-            Quaternion rotation = new Quaternion(rotationFB.X, rotationFB.Y, rotationFB.Z, rotationFB.W);
-
+            Vector3 position = Serializer.DeserializePosition(nextPrimary.Position);
+            Quaternion rotation = Serializer.DeserializeRotation(nextPrimary.Rotation);
             localObjectStore.Instantiate(prefabId, position, rotation, nextPrimary.Guid);
           } else {
             // Secondary copy exists. Lerp it.
             var objectLerp = new UpdateLerp<ObjectState>(lastPrimary, nextPrimary);
-            Serialization.Lerp(secondaryObject, objectLerp, (nextUpdate - Time.time) / UPDATE_RATE);
+            Serializer.Lerp(secondaryObject, objectLerp, (nextUpdate - Time.time) / UPDATE_RATE);
           }
         }
       }

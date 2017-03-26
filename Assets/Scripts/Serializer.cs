@@ -4,21 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts {
-  public class Serialization : MonoBehaviour {
+  public class Serializer : MonoBehaviour {
     static ILogger logger = Debug.logger;
 
-    public static Offset<ObjectState> ToFlatbuffer(FlatBufferBuilder builder, NetworkedObject networkedObj) {
-      var position = networkedObj.position;
-      var rotation = networkedObj.rotation;
+    public static Offset<Position> SerializePosition(FlatBufferBuilder builder, Vector3 position) {
+      return Position.CreatePosition(builder, position.x, position.y, position.z);
+    }
 
-      var guid = builder.CreateString(networkedObj.guid);
+    public static Vector3 DeserializePosition(Position position) {
+      return new Vector3(position.X, position.Y, position.Z);
+    }
 
-      ObjectState.StartObjectState(builder);
-      ObjectState.AddGuid(builder, guid);
-      ObjectState.AddPrefabId(builder, (int)networkedObj.prefabId);
-      ObjectState.AddPosition(builder, Position.CreatePosition(builder, position.x, position.y, position.z));
-      ObjectState.AddRotation(builder, Rotation.CreateRotation(builder, rotation.x, rotation.y, rotation.z, rotation.w));
-      return ObjectState.EndObjectState(builder);
+    public static Offset<Rotation> SerializeRotation(FlatBufferBuilder builder, Quaternion rotation) {
+      return Rotation.CreateRotation(builder, rotation.x, rotation.y, rotation.z, rotation.w);
+    }
+
+    public static Quaternion DeserializeRotation(Rotation rotation) {
+      return new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
     }
 
     public static byte[] ToBytes(List<NetworkedObject> primaries, List<NetworkedObject> secondaries) {
@@ -26,13 +28,13 @@ namespace Assets.Scripts {
 
       var primariesOffsets = new Offset<ObjectState>[primaries.Count];
       for (var i = 0; i < primaries.Count; i++) {
-         primariesOffsets[i] = ToFlatbuffer(builder, primaries[i]);
+         primariesOffsets[i] = primaries[i].Serialize(builder);
       }
       var primariesOffset = WorldUpdate.CreatePrimariesVector(builder, primariesOffsets);
 
       var secondariesOffsets = new Offset<ObjectState>[secondaries.Count];
       for (var i = 0; i < secondaries.Count; i++) {
-         secondariesOffsets[i] = ToFlatbuffer(builder, secondaries[i]);
+         secondariesOffsets[i] = secondaries[i].Serialize(builder);
       }
       var secondariesOffset = WorldUpdate.CreatePrimariesVector(builder, primariesOffsets);
 
