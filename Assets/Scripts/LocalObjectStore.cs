@@ -43,11 +43,13 @@ namespace Assets.Scripts {
 
     public void RegisterPrimary(NetworkedObject obj) {
       string guid = Guid.NewGuid().ToString();
+      obj.guid = guid;
       primaryLookup.Add(guid, obj);
     }
 
     public void RegisterSecondary(NetworkedObject obj, string guid) {
       secondaryLookup.Add(guid, obj);
+      obj.guid = guid;
     }
 
     public NetworkedObject GetSecondary(string guid) {

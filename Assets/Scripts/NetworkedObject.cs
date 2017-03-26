@@ -16,7 +16,7 @@ namespace Assets.Scripts {
     }
 
     [HideInInspector]
-    public string guid;
+    public string guid { get; set; }
 
     public PrefabId prefabId;
   }
