@@ -26,7 +26,7 @@ namespace Assets.Scripts {
     void Update() {
       byte[] bytes = udpClient.Read();
       if (bytes != null) {
-        stateBuffer.Enqueue(Serializer.FromBytes(bytes));
+        stateBuffer.Enqueue(Serializer.BytesToFlatWorldState(bytes));
       }
 
       // When a lerping time is up, we get the newest position to lerp towards.

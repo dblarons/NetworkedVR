@@ -31,7 +31,12 @@ namespace Assets.Scripts {
       return offsets;
     }
 
-    public static FlatWorldState FromBytes(byte[] bytes) {
+    public static byte[] FlatWorldStateToBytes(FlatBufferBuilder builder, Offset<FlatWorldState> worldState) {
+      builder.Finish(worldState.Value);
+      return builder.SizedByteArray();
+    }
+
+    public static FlatWorldState BytesToFlatWorldState(byte[] bytes) {
       var buffer = new ByteBuffer(bytes);
       return FlatWorldState.GetRootAsFlatWorldState(buffer);
     }

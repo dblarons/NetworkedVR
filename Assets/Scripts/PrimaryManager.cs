@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FlatBuffers;
+using UnityEngine;
 using VRTK;
 
 namespace Assets.Scripts {
@@ -30,7 +31,11 @@ namespace Assets.Scripts {
       if (nextSend < Time.time) {
         nextSend = Time.time + SEND_RATE;
         logger.Log("LOG (server): Sending world update");
-        udpServer.SendMessage(localObjectStore.Serialize());
+
+        // TODO(dblarons): Dynamically allocate this size by asking the localObjectStore for it
+        var builder = new FlatBufferBuilder(1024);
+        var worldState = localObjectStore.Serialize(builder);
+        udpServer.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
       }
     }
 

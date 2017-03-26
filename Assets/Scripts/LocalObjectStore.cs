@@ -81,9 +81,7 @@ namespace Assets.Scripts {
       return secondaryLookup.Values.ToList();
     }
 
-    public byte[] Serialize() {
-      var builder = new FlatBufferBuilder(1024); // TODO(dblarons): Dynamically allocate this size.
-
+    public Offset<FlatWorldState> Serialize(FlatBufferBuilder builder) {
       var primariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
         Serializer.SerializeNetworkedObjects(builder, GetPrimaries())
@@ -99,9 +97,7 @@ namespace Assets.Scripts {
       FlatWorldState.AddPrimaries(builder, primariesOffset);
       FlatWorldState.AddSecondaries(builder, secondariesOffset);
 
-      var worldUpdate = FlatWorldState.EndFlatWorldState(builder);
-      builder.Finish(worldUpdate.Value);
-      return builder.SizedByteArray();
+      return FlatWorldState.EndFlatWorldState(builder);
     }
   }
 }
