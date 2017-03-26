@@ -1,4 +1,5 @@
-﻿using FlatBuffers;
+﻿using Assets.Scripts.Buffering;
+using FlatBuffers;
 using NetworkingFBS;
 using UnityEngine;
 
@@ -30,6 +31,10 @@ namespace Assets.Scripts {
       FlatNetworkedObject.AddPosition(builder, Serializer.SerializeVector3(builder, position));
       FlatNetworkedObject.AddRotation(builder, Serializer.SerializeQuaternion(builder, rotation));
       return FlatNetworkedObject.EndFlatNetworkedObject(builder);
+    }
+
+    public void Lerp(StateTransition<FlatNetworkedObject> transition, float t) {
+      Lerp(transition.last, transition.next, t);
     }
 
     public void Lerp(FlatNetworkedObject last, FlatNetworkedObject next, float t) {

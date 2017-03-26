@@ -62,8 +62,8 @@ namespace Assets.Scripts {
             localObjectStore.Instantiate(prefabId, position, rotation, nextPrimary.Guid);
           } else {
             // Secondary copy exists. Lerp it.
-            var objectLerp = new StateTransition<FlatNetworkedObject>(lastPrimary, nextPrimary);
-            secondaryObject.Lerp(objectLerp.last, objectLerp.next, (nextUpdateTime - Time.time) / UPDATE_RATE);
+            var transition = new StateTransition<FlatNetworkedObject>(lastPrimary, nextPrimary);
+            secondaryObject.Lerp(transition, (nextUpdateTime - Time.time) / UPDATE_RATE);
           }
         }
       }
