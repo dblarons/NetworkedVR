@@ -23,29 +23,12 @@ namespace Assets.Scripts {
       return new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
     }
 
-    public static byte[] ToBytes(List<NetworkedObject> primaries, List<NetworkedObject> secondaries) {
-      var builder = new FlatBufferBuilder(1024);
-
-      var primariesOffsets = new Offset<ObjectState>[primaries.Count];
-      for (var i = 0; i < primaries.Count; i++) {
-         primariesOffsets[i] = primaries[i].Serialize(builder);
+    public static Offset<ObjectState>[] SerializeNetworkedObjects(FlatBufferBuilder builder, List<NetworkedObject> objs) {
+      var offsets = new Offset<ObjectState>[objs.Count];
+      for (var i = 0; i < objs.Count; i++) {
+         offsets[i] = objs[i].Serialize(builder);
       }
-      var primariesOffset = WorldUpdate.CreatePrimariesVector(builder, primariesOffsets);
-
-      var secondariesOffsets = new Offset<ObjectState>[secondaries.Count];
-      for (var i = 0; i < secondaries.Count; i++) {
-         secondariesOffsets[i] = secondaries[i].Serialize(builder);
-      }
-      var secondariesOffset = WorldUpdate.CreatePrimariesVector(builder, primariesOffsets);
-
-      WorldUpdate.StartWorldUpdate(builder);
-
-      WorldUpdate.AddPrimaries(builder, primariesOffset);
-      WorldUpdate.AddSecondaries(builder, secondariesOffset);
-
-      var worldUpdate = WorldUpdate.EndWorldUpdate(builder);
-      builder.Finish(worldUpdate.Value);
-      return builder.SizedByteArray();
+      return offsets;
     }
 
     public static WorldUpdate FromBytes(byte[] bytes) {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using FlatBuffers;
+using NetworkingFBS;
 
 namespace Assets.Scripts {
   public class LocalObjectStore : MonoBehaviour {
@@ -71,12 +73,35 @@ namespace Assets.Scripts {
       return secondaryObject;
     }
 
-    public List<NetworkedObject> GetPrimaries() {
+    List<NetworkedObject> GetPrimaries() {
       return primaryLookup.Values.ToList();
     }
 
-    public List<NetworkedObject> GetSecondaries() {
+    List<NetworkedObject> GetSecondaries() {
       return secondaryLookup.Values.ToList();
+    }
+
+    public byte[] Serialize() {
+      var builder = new FlatBufferBuilder(1024); // TODO(dblarons): Dynamically allocate this size.
+
+      var primariesOffset = WorldUpdate.CreatePrimariesVector(
+        builder,
+        Serializer.SerializeNetworkedObjects(builder, GetPrimaries())
+      );
+
+      var secondariesOffset = WorldUpdate.CreatePrimariesVector(
+        builder,
+        Serializer.SerializeNetworkedObjects(builder, GetSecondaries())
+      );
+
+      WorldUpdate.StartWorldUpdate(builder);
+
+      WorldUpdate.AddPrimaries(builder, primariesOffset);
+      WorldUpdate.AddSecondaries(builder, secondariesOffset);
+
+      var worldUpdate = WorldUpdate.EndWorldUpdate(builder);
+      builder.Finish(worldUpdate.Value);
+      return builder.SizedByteArray();
     }
   }
 }
