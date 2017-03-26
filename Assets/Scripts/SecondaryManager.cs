@@ -3,9 +3,10 @@ using NetworkingFBS;
 
 namespace Assets.Scripts {
   public class SecondaryManager : MonoBehaviour {
+    static ILogger logger = Debug.logger;
+
     public LocalObjectStore localObjectStore;
 
-    static ILogger logger = Debug.logger;
     UDPClient udpClient;
     UpdateBuffer<WorldUpdate> updateBuffer;
     UpdateLerp<WorldUpdate> worldLerp;

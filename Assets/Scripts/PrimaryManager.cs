@@ -1,21 +1,17 @@
 ﻿using UnityEngine;
-using NetworkingFBS;
-using FlatBuffers;
 using VRTK;
 
 namespace Assets.Scripts {
   public class PrimaryManager : MonoBehaviour {
-    public GameObject controller;
-
-    public LocalObjectStore localObjectStore;
-    public PrefabLibrary prefabLibrary;
-
     static ILogger logger = Debug.logger;
+
+    public GameObject controller;
+    public LocalObjectStore localObjectStore;
+
     UDPServer udpServer;
 
     float SEND_RATE = 0.033F;
     float nextSend = 0.0F;
-
     bool isInitialized = false;
 
     void Start() {
