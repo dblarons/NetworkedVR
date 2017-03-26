@@ -1,43 +1,71 @@
 ﻿using UnityEngine;
 using NetworkingFBS;
+using Assets.Scripts.Buffering;
 
 namespace Assets.Scripts {
   public class SecondaryManager : MonoBehaviour {
     static ILogger logger = Debug.logger;
+
+    public LocalObjectStore localObjectStore;
+
     UDPClient udpClient;
-    public LocalObjectStore store;
-    UpdateBuffer<Action> updateBuffer;
-    UpdateLerp<Action> updateLerp;
+    StateBuffer<FlatWorldState> stateBuffer;
+    StateTransition<FlatWorldState> worldTransition;
 
     float UPDATE_RATE = 0.033F;
-    float nextUpdate = 0.0F;
-
-    bool isInitialized;
+    float nextUpdateTime = 0.0F;
 
     void Start() {
       udpClient = new UDPClient();
       udpClient.Connect();
 
-      updateBuffer = new UpdateBuffer<Action>();
-      updateLerp = null;
+      stateBuffer = new StateBuffer<FlatWorldState>();
+      worldTransition = null;
     }
 
     void Update() {
       byte[] bytes = udpClient.Read();
       if (bytes != null) {
-        updateBuffer.Enqueue(Serialization.FromBytes(bytes));
+        stateBuffer.Enqueue(Serializer.BytesToFlatWorldState(bytes));
       }
 
       // When a lerping time is up, we get the newest position to lerp towards.
-      if (nextUpdate < Time.time) {
-        UpdateLerp<Action> update = updateBuffer.Dequeue();
+      if (nextUpdateTime < Time.time) {
+        StateTransition<FlatWorldState> update = stateBuffer.Dequeue();
         if (update != null) {
-          updateLerp = update;
+          worldTransition = update;
         }
       }
 
-      if (updateLerp != null) {
-        Serialization.Lerp(store.GetCube(), updateLerp, (nextUpdate - Time.time) / UPDATE_RATE);
+      if (worldTransition != null) {
+        if (worldTransition.last.PrimariesLength != worldTransition.next.PrimariesLength) {
+          logger.LogError("PRIMARIES MISMATCH", "Primaries length did not match");
+        }
+
+        for (var i = 0; i < worldTransition.last.PrimariesLength; i++) {
+          var lastPrimary = worldTransition.last.GetPrimaries(i);
+          var nextPrimary = worldTransition.next.GetPrimaries(i);
+
+          if (!lastPrimary.Guid.Equals(nextPrimary.Guid)) {
+            // TODO(dblarons): See if this case happens only when new objects are created.
+            logger.LogError("GUID MISMATCH", "GUIDs did not match during primary lerping");
+          }
+
+          var secondaryObject = localObjectStore.GetSecondary(nextPrimary.Guid);
+          if (secondaryObject == null) {
+            logger.Log("New object was created");
+
+            // Secondary copy does not exist yet. Create one and register it.
+            var prefabId = (PrefabId)nextPrimary.PrefabId;
+            Vector3 position = Serializer.DeserializeVector3(nextPrimary.Position);
+            Quaternion rotation = Serializer.DeserializeQuaternion(nextPrimary.Rotation);
+            localObjectStore.Instantiate(prefabId, position, rotation, nextPrimary.Guid);
+          } else {
+            // Secondary copy exists. Lerp it.
+            var transition = new StateTransition<FlatNetworkedObject>(lastPrimary, nextPrimary);
+            secondaryObject.Lerp(transition, (nextUpdateTime - Time.time) / UPDATE_RATE);
+          }
+        }
       }
     }
   }
