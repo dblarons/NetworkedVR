@@ -52,20 +52,5 @@ namespace Assets.Scripts {
       var buffer = new ByteBuffer(bytes);
       return WorldUpdate.GetRootAsWorldUpdate(buffer);
     }
-
-    public static void Lerp(NetworkedObject obj, UpdateLerp<ObjectState> objectState, float t) {
-      var fromPositionFB = objectState.last.Position;
-      var toPositionFB = objectState.next.Position;
-      Vector3 fromPosition = new Vector3(fromPositionFB.X, fromPositionFB.Y, fromPositionFB.Z);
-      Vector3 toPosition = new Vector3(toPositionFB.X, toPositionFB.Y, toPositionFB.Z);
-
-      var fromRotationFB = objectState.last.Rotation;
-      var toRotationFB = objectState.next.Rotation;
-      Quaternion fromRotation = new Quaternion(fromRotationFB.X, fromRotationFB.Y, fromRotationFB.Z, fromRotationFB.W);
-      Quaternion toRotation = new Quaternion(toRotationFB.X, toRotationFB.Y, toRotationFB.Z, toRotationFB.W);
-
-      obj.transform.position = Vector3.Lerp(fromPosition, toPosition, t);
-      obj.transform.rotation = Quaternion.Lerp(fromRotation, toRotation, t);
-    }
   }
 }

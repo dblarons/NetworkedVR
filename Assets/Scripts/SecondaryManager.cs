@@ -61,7 +61,7 @@ namespace Assets.Scripts {
           } else {
             // Secondary copy exists. Lerp it.
             var objectLerp = new UpdateLerp<ObjectState>(lastPrimary, nextPrimary);
-            Serializer.Lerp(secondaryObject, objectLerp, (nextUpdate - Time.time) / UPDATE_RATE);
+            secondaryObject.Lerp(objectLerp.last, objectLerp.next, (nextUpdate - Time.time) / UPDATE_RATE);
           }
         }
       }
