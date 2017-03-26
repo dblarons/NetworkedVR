@@ -4,11 +4,9 @@ using NetworkingFBS;
 namespace Assets.Scripts {
   public class SecondaryManager : MonoBehaviour {
     public LocalObjectStore localObjectStore;
-    public PrefabLibrary prefabLibrary;
 
     static ILogger logger = Debug.logger;
     UDPClient udpClient;
-    public LocalObjectStore store;
     UpdateBuffer<WorldUpdate> updateBuffer;
     UpdateLerp<WorldUpdate> worldLerp;
 
@@ -42,6 +40,7 @@ namespace Assets.Scripts {
           logger.LogError("PRIMARIES MISMATCH", "Primaries length did not match");
         }
 
+        logger.Log("Primaries length (in secondary): " + worldLerp.last.PrimariesLength);
         for (var i = 0; i < worldLerp.last.PrimariesLength; i++) {
           var lastPrimary = worldLerp.last.GetPrimaries(i);
           var nextPrimary = worldLerp.next.GetPrimaries(i);

@@ -1,20 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace Assets.Scripts {
   public class LocalObjectStore : MonoBehaviour {
     public PrefabLibrary prefabLibrary;
 
-    List<string> primaryIds;
-    List<string> secondaryIds;
     Dictionary<string, NetworkedObject> primaryLookup;
     Dictionary<string, NetworkedObject> secondaryLookup;
 
     void Start() {
-      primaryIds = new List<string>();
-      secondaryIds = new List<string>();
-
       primaryLookup = new Dictionary<string, NetworkedObject>();
       secondaryLookup = new Dictionary<string, NetworkedObject>();
     }
@@ -47,12 +43,10 @@ namespace Assets.Scripts {
 
     public void RegisterPrimary(NetworkedObject obj) {
       string guid = Guid.NewGuid().ToString();
-      primaryIds.Add(guid);
       primaryLookup.Add(guid, obj);
     }
 
     public void RegisterSecondary(NetworkedObject obj, string guid) {
-      secondaryIds.Add(guid);
       secondaryLookup.Add(guid, obj);
     }
 
@@ -66,19 +60,11 @@ namespace Assets.Scripts {
     }
 
     public List<NetworkedObject> GetPrimaries() {
-      var primaries = new List<NetworkedObject>();
-      foreach (var primaryId in primaryIds) {
-        primaries.Add(primaryLookup[primaryId]);
-      }
-      return primaries;
+      return primaryLookup.Values.ToList();
     }
 
     public List<NetworkedObject> GetSecondaries() {
-      var primaries = new List<NetworkedObject>();
-      foreach (var secondaryId in secondaryIds) {
-        primaries.Add(secondaryLookup[secondaryId]);
-      }
-      return primaries;
+      return secondaryLookup.Values.ToList();
     }
   }
 }
