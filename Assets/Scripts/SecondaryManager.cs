@@ -9,42 +9,42 @@ namespace Assets.Scripts {
     public LocalObjectStore localObjectStore;
 
     UDPClient udpClient;
-    StateBuffer<WorldUpdate> updateBuffer;
-    StateTransition<WorldUpdate> worldLerp;
+    StateBuffer<FlatWorldState> stateBuffer;
+    StateTransition<FlatWorldState> worldTransition;
 
     float UPDATE_RATE = 0.033F;
-    float nextUpdate = 0.0F;
+    float nextUpdateTime = 0.0F;
 
     void Start() {
       udpClient = new UDPClient();
       udpClient.Connect();
 
-      updateBuffer = new StateBuffer<WorldUpdate>();
-      worldLerp = null;
+      stateBuffer = new StateBuffer<FlatWorldState>();
+      worldTransition = null;
     }
 
     void Update() {
       byte[] bytes = udpClient.Read();
       if (bytes != null) {
-        updateBuffer.Enqueue(Serializer.FromBytes(bytes));
+        stateBuffer.Enqueue(Serializer.FromBytes(bytes));
       }
 
       // When a lerping time is up, we get the newest position to lerp towards.
-      if (nextUpdate < Time.time) {
-        StateTransition<WorldUpdate> update = updateBuffer.Dequeue();
+      if (nextUpdateTime < Time.time) {
+        StateTransition<FlatWorldState> update = stateBuffer.Dequeue();
         if (update != null) {
-          worldLerp = update;
+          worldTransition = update;
         }
       }
 
-      if (worldLerp != null) {
-        if (worldLerp.last.PrimariesLength != worldLerp.next.PrimariesLength) {
+      if (worldTransition != null) {
+        if (worldTransition.last.PrimariesLength != worldTransition.next.PrimariesLength) {
           logger.LogError("PRIMARIES MISMATCH", "Primaries length did not match");
         }
 
-        for (var i = 0; i < worldLerp.last.PrimariesLength; i++) {
-          var lastPrimary = worldLerp.last.GetPrimaries(i);
-          var nextPrimary = worldLerp.next.GetPrimaries(i);
+        for (var i = 0; i < worldTransition.last.PrimariesLength; i++) {
+          var lastPrimary = worldTransition.last.GetPrimaries(i);
+          var nextPrimary = worldTransition.next.GetPrimaries(i);
 
           if (!lastPrimary.Guid.Equals(nextPrimary.Guid)) {
             // TODO(dblarons): See if this case happens only when new objects are created.
@@ -63,7 +63,7 @@ namespace Assets.Scripts {
           } else {
             // Secondary copy exists. Lerp it.
             var objectLerp = new StateTransition<FlatNetworkedObject>(lastPrimary, nextPrimary);
-            secondaryObject.Lerp(objectLerp.last, objectLerp.next, (nextUpdate - Time.time) / UPDATE_RATE);
+            secondaryObject.Lerp(objectLerp.last, objectLerp.next, (nextUpdateTime - Time.time) / UPDATE_RATE);
           }
         }
       }

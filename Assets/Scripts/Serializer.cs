@@ -31,9 +31,9 @@ namespace Assets.Scripts {
       return offsets;
     }
 
-    public static WorldUpdate FromBytes(byte[] bytes) {
+    public static FlatWorldState FromBytes(byte[] bytes) {
       var buffer = new ByteBuffer(bytes);
-      return WorldUpdate.GetRootAsWorldUpdate(buffer);
+      return FlatWorldState.GetRootAsFlatWorldState(buffer);
     }
   }
 }

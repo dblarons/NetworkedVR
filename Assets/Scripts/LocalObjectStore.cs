@@ -84,22 +84,22 @@ namespace Assets.Scripts {
     public byte[] Serialize() {
       var builder = new FlatBufferBuilder(1024); // TODO(dblarons): Dynamically allocate this size.
 
-      var primariesOffset = WorldUpdate.CreatePrimariesVector(
+      var primariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
         Serializer.SerializeNetworkedObjects(builder, GetPrimaries())
       );
 
-      var secondariesOffset = WorldUpdate.CreatePrimariesVector(
+      var secondariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
         Serializer.SerializeNetworkedObjects(builder, GetSecondaries())
       );
 
-      WorldUpdate.StartWorldUpdate(builder);
+      FlatWorldState.StartFlatWorldState(builder);
 
-      WorldUpdate.AddPrimaries(builder, primariesOffset);
-      WorldUpdate.AddSecondaries(builder, secondariesOffset);
+      FlatWorldState.AddPrimaries(builder, primariesOffset);
+      FlatWorldState.AddSecondaries(builder, secondariesOffset);
 
-      var worldUpdate = WorldUpdate.EndWorldUpdate(builder);
+      var worldUpdate = FlatWorldState.EndFlatWorldState(builder);
       builder.Finish(worldUpdate.Value);
       return builder.SizedByteArray();
     }

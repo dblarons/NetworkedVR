@@ -5,7 +5,7 @@ namespace Assets.Scripts.Buffering {
     readonly int CAPACITY = 3;
 
     NetQueue<T> queue;
-    T lastUpdate;
+    T lastState;
 
     public StateBuffer() {
       queue = new NetQueue<T>(CAPACITY);
@@ -34,16 +34,16 @@ namespace Assets.Scripts.Buffering {
     /// </summary>
     /// <returns></returns>
     public StateTransition<T> Dequeue() {
-      T nextUpdate = null;
-      queue.TryDequeue(out nextUpdate);
+      T nextState = null;
+      queue.TryDequeue(out nextState);
 
-      StateTransition<T> updateLerp = nextUpdate == null
+      StateTransition<T> stateTransition = nextState == null
           ? null
-          : new StateTransition<T>(lastUpdate, nextUpdate);
+          : new StateTransition<T>(lastState, nextState);
 
       // Keep track of the last update.
-      lastUpdate = nextUpdate;
-      return updateLerp;
+      lastState = nextState;
+      return stateTransition;
     }
   }
 }

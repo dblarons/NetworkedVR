@@ -20,9 +20,9 @@ table FlatNetworkedObject {
   rotation:FlatQuaternion;
 }
 
-table WorldUpdate {
+table FlatWorldState {
   primaries:[FlatNetworkedObject];
   secondaries:[FlatNetworkedObject];
 }
 
-root_type WorldUpdate;
+root_type FlatWorldState;
