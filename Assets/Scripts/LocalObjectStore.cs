@@ -84,12 +84,18 @@ namespace Assets.Scripts {
     public Offset<FlatWorldState> Serialize(FlatBufferBuilder builder) {
       var primariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
-        Serializer.SerializeNetworkedObjects(builder, GetPrimaries())
+        Serializer.SerializeNetworkedObjects(
+          builder,
+          GetPrimaries().Where(primary => primary.HasUpdate()).ToList()
+        )
       );
 
       var secondariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
-        Serializer.SerializeNetworkedObjects(builder, GetSecondaries())
+        Serializer.SerializeNetworkedObjects(
+          builder,
+          GetSecondaries().Where(secondary => secondary.HasUpdate()).ToList()
+        )
       );
 
       FlatWorldState.StartFlatWorldState(builder);

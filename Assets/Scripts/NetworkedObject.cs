@@ -22,6 +22,22 @@ namespace Assets.Scripts {
 
     public PrefabId prefabId;
 
+    bool ForceUpdate;
+
+    void Start() {
+      // Always send an update when the object is first initialized.
+      ForceUpdate = true;
+    }
+
+    public bool HasUpdate() {
+      if (ForceUpdate) {
+        ForceUpdate = false;
+        return true;
+      }
+
+      return GetComponent<Rigidbody>().velocity.magnitude > 0.001;
+    }
+
     public Offset<FlatNetworkedObject> Serialize(FlatBufferBuilder builder) {
       var guidStr = builder.CreateString(guid);
 
