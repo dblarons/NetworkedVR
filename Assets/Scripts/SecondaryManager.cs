@@ -3,6 +3,7 @@ using NetworkingFBS;
 using Assets.Scripts.Buffering;
 using System.Collections.Generic;
 using System.Linq;
+using FlatBuffers;
 
 namespace Assets.Scripts {
   public class SecondaryTransition {
@@ -67,6 +68,16 @@ namespace Assets.Scripts {
             .Where(sec => sec.isInitialized)
             .Select(sec => new SecondaryTransition(sec, sec.buffer.Dequeue()))
             .Where(trans => trans.transition != null).ToList();
+
+
+        // TODO(dblarons): Dynamically allocate this size by asking the localObjectStore for it.
+        // TODO(dblarons): To support >1 peer, there must be one secondary manager (client) per
+        // connected peer and only secondary updates relevant to that peer should be sent to it.
+        // There should be one primary on each peer which sends updates to all clients connected
+        // to it.
+        var builder = new FlatBufferBuilder(1024);
+        var worldState = localObjectStore.Serialize(builder);
+        udpClient.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
       }
 
       foreach (var transition in secondaryTransitions) {

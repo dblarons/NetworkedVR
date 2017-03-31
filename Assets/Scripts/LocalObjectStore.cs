@@ -98,6 +98,9 @@ namespace Assets.Scripts {
         )
       );
 
+      // TODO(dblarons): Split secondary serialization into its own method that will
+      // be called by the secondary manager (udp client) when sending updates back to
+      // its primary connection. That is required for supporting >2 peers.
       var secondariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
         Serializer.SerializeNetworkedObjects(

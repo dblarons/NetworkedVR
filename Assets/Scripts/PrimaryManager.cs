@@ -32,7 +32,7 @@ namespace Assets.Scripts {
         nextSend = Time.time + SEND_RATE;
         logger.Log("LOG (server): Sending world update");
 
-        // TODO(dblarons): Dynamically allocate this size by asking the localObjectStore for it
+        // TODO(dblarons): Dynamically allocate this size by asking the localObjectStore for it.
         var builder = new FlatBufferBuilder(1024);
         var worldState = localObjectStore.Serialize(builder);
         udpServer.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
