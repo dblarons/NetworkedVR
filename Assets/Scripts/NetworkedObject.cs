@@ -22,16 +22,22 @@ namespace Assets.Scripts {
 
     public PrefabId prefabId;
 
-    bool ForceUpdate;
+    bool forceUpdate;
+
+    public StateBuffer<FlatNetworkedObject> buffer;
+
+    public bool isInitialized { get; private set; }
 
     void Start() {
       // Always send an update when the object is first initialized.
-      ForceUpdate = true;
+      forceUpdate = true;
+      buffer = new StateBuffer<FlatNetworkedObject>();
+      isInitialized = true;
     }
 
     public bool HasUpdate() {
-      if (ForceUpdate) {
-        ForceUpdate = false;
+      if (forceUpdate) {
+        forceUpdate = false;
         return true;
       }
 
