@@ -1,7 +1,9 @@
-Background
-==========
+Implications of Fog Computing on Multiplayer Games
+==================================================
 
-[]{#_qxksppjie2u8 .anchor}Interest in VR
+# Background
+
+## Interest in VR
 
 When the Oculus Rift prototype was first released in 2012\[5\], it
 opened up an entirely new market: affordable consumer VR. Four years
@@ -12,7 +14,7 @@ space, possible\[6\]. The technology that drives the Vive’s room scale
 innovation are their “lighthouse” infrared cameras which track the
 headset and two controllers in three dimensions.
 
-[]{#_hq2lgxvgqwwg .anchor}Unique Properties of VR
+## Unique Properties of VR
 
 Given the recent introduction of VR and room scale VR, developers face
 new and greater performance challenges compared to traditional, two
@@ -38,7 +40,7 @@ touching the controller. More positional data is generated in VR
 applications for one player than would be generated for several players
 in traditional games.
 
-[]{#_qma4hnj2adko .anchor}Why VR and not AR?
+## Why VR and not AR?
 
 In this study, we will consider only VR applications for a few reasons.
 First, VR technology is currently more mature than AR technology.
@@ -58,14 +60,14 @@ As briefly mentioned above, there are a number of performance
 constraints required by VR applications. In this study, we will consider
 the following constraints:
 
--   We are studying a networked application, so it must be able to
-    > support multiple players in a world with shared state
+-   We are studying a networked application, so it must be able to support
+    multiple players in a world with shared state
 
--   The application must be able to maintain over 90 fps over the life
-    > of the game
+-   The application must be able to maintain over 90 fps over the life of the
+    game
 
--   The application must be able to guarantee 90 fps for a
-    > to-be-determined number of players
+-   The application must be able to guarantee 90 fps for a to-be-determined
+    number of players
 
 Problem
 =======
@@ -103,7 +105,7 @@ interactive environment. Both objects within this environment and
 actions which players execute on the environment must be replicated on
 every player’s world instance.
 
-[]{#_lddwb1hkky7f .anchor}Existing Solutions
+## Existing Solutions
 
 There are three primary pre-existing solutions to this problem:
 
@@ -159,7 +161,7 @@ period of time for a secondary copy, it can safely be deleted. Execution
 partitioning is used to execute think functions for primary copies of
 objects owned by a node\[3\].
 
-[]{#_ojezd18a1ip5 .anchor}Our Solution: Peer-to-peer with state sharding
+## Our Solution: Peer-to-peer with state sharding
 
 We propose an approach which combines the merits of the peer-to-peer and
 distributed server approaches enumerated above. This approach is
@@ -188,7 +190,7 @@ clocks is out of the scope of this project, it is not unreasonable to
 expect that such authoritative sources could be used to limit the scope
 of time based errors during sharding.
 
-[]{#_ck7v48ohowl5 .anchor}Separate Proposal: Performance Placement
+## Separate Proposal: Performance Placement
 
 As a separate part of this project, Shashank will research secondary
 copy prediction and location optimization.
@@ -269,7 +271,7 @@ performance impacted as each new player joins.”
 Strategy
 ========
 
-[]{#_g44v8p6pw0cx .anchor}Implementation
+## Implementation
 
 To measure our hypothesis, we will create a library for multiplayer
 games that can be used in any game created with the Unity engine without
@@ -278,7 +280,7 @@ out in the “Matrix: Adaptive Middleware for Distributed Multiplayer
 Games” paper\[4\] to keep a clean separation between networking and
 application logic.
 
-[]{#_tl5r6dsfzbj9 .anchor}Hardware and Software Components
+## Hardware and Software Components
 
 The physical components used in this project are the HTC Vive, Windows
 or Macintosh computers, ZeroMQ for messaging, the Unity engine for
@@ -296,7 +298,7 @@ can be computers which are viewing the game with a normal desktop
 display. They will receive the same updates as the HTC Vive, but will
 have more limited ways to interact with the world.
 
-[]{#_htc37w4ew4i2 .anchor}Networking Library Architecture
+## Networking Library Architecture
 
 For reusability purposes, it is important that the networking library be
 isolated from any application code. Here it is helpful to follow the
@@ -338,7 +340,7 @@ their authoritative primary copy sources. It keeps track of which nodes
 own the secondary copies that it maintains and speaks directly with
 those nodes to update its replicas.
 
-[]{#_wbwbp5fm7fvf .anchor}Measurements
+## Measurements
 
 The peer-to-peer sharding approach described previously will be measured
 for success on two verticals: First, the system usage of each Unity
@@ -376,43 +378,42 @@ Our goal is that each incremental player should only increase traffic
 for the first player by 30%.
 
 References
+==========
 
-1.  GauthierDickey, Chris, et al. "Low latency and cheat-proof event
-    > ordering for peer-to-peer games." Proceedings of the 14th
-    > international workshop on Network and operating systems support
-    > for digital audio and video. ACM, 2004.
+1.  GauthierDickey, Chris, et al. "Low latency and cheat-proof event ordering
+    for peer-to-peer games." Proceedings of the 14th international workshop on
+    Network and operating systems support for digital audio and video. ACM,
+    2004.
 
-2.  Buyukkaya, Eliya, Maha Abdallah, and Romain Cavagna. "VoroGame: a
-    > hybrid P2P architecture for massively multiplayer games." Consumer
-    > Communications and Networking Conference, 2009. CCNC 2009. 6th
-    > IEEE. Ieee, 2009.
+2.  Buyukkaya, Eliya, Maha Abdallah, and Romain Cavagna. "VoroGame: a hybrid
+    P2P architecture for massively multiplayer games." Consumer Communications
+    and Networking Conference, 2009. CCNC 2009. 6th IEEE. Ieee, 2009.
 
 3.  Bharambe, Ashwin R., Jeff Pang, and Srinivasan Seshan. A distributed
-    > architecture for interactive multiplayer games. School of Computer
-    > Science, Carnegie Mellon University, 2005.
+    architecture for interactive multiplayer games. School of Computer Science,
+    Carnegie Mellon University, 2005.
 
 4.  Balan R.K., Ebling M., Castro P., Misra A. (2005) Matrix: Adaptive
-    > Middleware for Distributed Multiplayer Games. In: Alonso G. (eds)
-    > Middleware 2005. Middleware 2005. Lecture Notes in Computer
-    > Science, vol 3790. Springer, Berlin, Heidelberg.
+    Middleware for Distributed Multiplayer Games. In: Alonso G. (eds)
+    Middleware 2005. Middleware 2005. Lecture Notes in Computer Science, vol
+    3790. Springer, Berlin, Heidelberg.
 
 5.  [*"Oculus Rift: Step Into the
-    > Game"*](https://www.kickstarter.com/projects/1523379957/oculus-rift-step-into-the-game).
-    > Kickstarter. Retrieved June 17, 2015.
+    Game"*](https://www.kickstarter.com/projects/1523379957/oculus-rift-step-into-the-game).
+    Kickstarter. Retrieved June 17, 2015.
 
 6.  [*"Valve's VR headset is called the Vive and it's made by
-    > HTC"*](http://www.theverge.com/2015/3/1/8127445/htc-vive-valve-vr-headset).
-    > The Verge. Retrieved 1 March 2015.
+    HTC"*](http://www.theverge.com/2015/3/1/8127445/htc-vive-valve-vr-headset).
+    The Verge. Retrieved 1 March 2015.
 
-7.  Tschorsch, Florian, and Björn Scheuermann. "Bitcoin and beyond: A
-    > technical survey on decentralized digital currencies." IEEE
-    > Communications Surveys & Tutorials 18.3 (2015): 2084-2123.
+7.  Tschorsch, Florian, and Björn Scheuermann. "Bitcoin and beyond: A technical
+    survey on decentralized digital currencies." IEEE Communications Surveys &
+    Tutorials 18.3 (2015): 2084-2123.
 
-8.  Wood, Gavin. "Ethereum: A secure decentralised generalised
-    > transaction ledger." Ethereum Project Yellow Paper 151 (2014).
+8.  Wood, Gavin. "Ethereum: A secure decentralised generalised transaction
+    ledger." Ethereum Project Yellow Paper 151 (2014).
 
 9.  Corbett, James C., et al. "Spanner: Google’s globally distributed
-    > database." ACM Transactions on Computer Systems (TOCS) 31.3
-    > (2013): 8.
+    database." ACM Transactions on Computer Systems (TOCS) 31.3 (2013): 8.
 
 
