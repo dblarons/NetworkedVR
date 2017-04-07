@@ -89,24 +89,35 @@ namespace Assets.Scripts {
       return secondaryLookup.Values.ToList();
     }
 
-    public Offset<FlatWorldState> Serialize(FlatBufferBuilder builder) {
+    public Offset<FlatWorldState> SerializePrimaries(FlatBufferBuilder builder, float timestamp) {
+      return Serialize(
+        builder,
+        GetPrimaries().Where(primary => primary.HasUpdate()).ToList(),
+        new List<NetworkedObject>(),
+        timestamp
+      );
+    }
+
+    public Offset<FlatWorldState> SerializeSecondaries(FlatBufferBuilder builder,
+        List<NetworkedObject> secondaries, float timestamp) {
+      return Serialize(
+        builder,
+        new List<NetworkedObject>(),
+        secondaries,
+        timestamp
+      );
+    }
+
+    public Offset<FlatWorldState> Serialize(FlatBufferBuilder builder, List<NetworkedObject>
+        primaries, List<NetworkedObject> secondaries, float timestamp) {
       var primariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
-        Serializer.SerializeNetworkedObjects(
-          builder,
-          GetPrimaries().Where(primary => primary.HasUpdate()).ToList()
-        )
+        Serializer.SerializeNetworkedObjects(builder, primaries, timestamp)
       );
 
-      // TODO(dblarons): Split secondary serialization into its own method that will
-      // be called by the secondary manager (udp client) when sending updates back to
-      // its primary connection. That is required for supporting >2 peers.
       var secondariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
-        Serializer.SerializeNetworkedObjects(
-          builder,
-          GetSecondaries().Where(secondary => secondary.HasUpdate()).ToList()
-        )
+        Serializer.SerializeNetworkedObjects(builder, secondaries, timestamp)
       );
 
       FlatWorldState.StartFlatWorldState(builder);

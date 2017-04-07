@@ -1,4 +1,5 @@
 ﻿using FlatBuffers;
+using NetworkingFBS;
 using UnityEngine;
 using VRTK;
 
@@ -28,13 +29,25 @@ namespace Assets.Scripts {
         isInitialized = true;
       }
 
+      byte[] bytes = udpServer.Read();
+      if (bytes != null) {
+        FlatWorldState receivedWorldState = Serializer.BytesToFlatWorldState(bytes);
+        for (int i = 0; i < receivedWorldState.SecondariesLength; i++) {
+          logger.Log("Primary received and set " + receivedWorldState.SecondariesLength + " dirty objects from secondary");
+          // When a secondary update is received, immediately set the primary to the extrapolated
+          // secondary position.
+          var receivedSecondary = receivedWorldState.GetSecondaries(i);
+          var primary = localObjectStore.GetPrimary(receivedSecondary.Guid);
+          primary.Extrapolate(receivedSecondary, Time.time - receivedSecondary.Timestamp);
+        }
+      }
+
       if (nextSend < Time.time) {
         nextSend = Time.time + SEND_RATE;
-        logger.Log("LOG (server): Sending world update");
 
         // TODO(dblarons): Dynamically allocate this size by asking the localObjectStore for it.
         var builder = new FlatBufferBuilder(1024);
-        var worldState = localObjectStore.Serialize(builder);
+        var worldState = localObjectStore.SerializePrimaries(builder, Time.time);
         udpServer.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
       }
     }

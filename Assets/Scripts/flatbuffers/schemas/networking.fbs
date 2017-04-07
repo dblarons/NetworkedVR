@@ -16,8 +16,10 @@ struct FlatQuaternion {
 table FlatNetworkedObject {
   guid:string;
   prefabId:int;
+  timestamp:float;
   position:FlatVector3;
   rotation:FlatQuaternion;
+  velocity:FlatVector3;
 }
 
 table FlatWorldState {

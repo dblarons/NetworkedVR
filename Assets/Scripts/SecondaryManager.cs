@@ -41,15 +41,14 @@ namespace Assets.Scripts {
     void Update() {
       byte[] bytes = udpClient.Read();
       if (bytes != null) {
-        FlatWorldState worldState = Serializer.BytesToFlatWorldState(bytes);
-        for (var i = 0; i < worldState.PrimariesLength; i++) {
-          var receivedPrimary = worldState.GetPrimaries(i);
+        FlatWorldState receivedWorldState = Serializer.BytesToFlatWorldState(bytes);
+        for (var i = 0; i < receivedWorldState.PrimariesLength; i++) {
+          var receivedPrimary = receivedWorldState.GetPrimaries(i);
           var secondary = localObjectStore.GetSecondary(receivedPrimary.Guid);
           if (secondary == null) {
             // Secondary copy does not exist yet. Create one and register it.
-            var prefabId = (PrefabId)receivedPrimary.PrefabId;
             localObjectStore.Instantiate(
-              prefabId,
+              (PrefabId)receivedPrimary.PrefabId,
               Serializer.DeserializeVector3(receivedPrimary.Position),
               Serializer.DeserializeQuaternion(receivedPrimary.Rotation),
               receivedPrimary.Guid
@@ -61,27 +60,36 @@ namespace Assets.Scripts {
         }
       }
 
-      // When a lerping time is up, we get the newest position to lerp towards.
+      // When a lerping time is up, we get the newest positions to lerp towards.
       if (nextUpdateTime < Time.time) {
         secondaryTransitions = localObjectStore
             .GetSecondaries()
             .Where(sec => sec.isInitialized)
             .Select(sec => new SecondaryTransition(sec, sec.buffer.Dequeue()))
             .Where(trans => trans.transition != null).ToList();
-
-
-        // TODO(dblarons): Dynamically allocate this size by asking the localObjectStore for it.
-        // TODO(dblarons): To support >1 peer, there must be one secondary manager (client) per
-        // connected peer and only secondary updates relevant to that peer should be sent to it.
-        // There should be one primary on each peer which sends updates to all clients connected
-        // to it.
-        var builder = new FlatBufferBuilder(1024);
-        var worldState = localObjectStore.Serialize(builder);
-        udpClient.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
       }
 
+      var dirtyObjects = new List<NetworkedObject>();
+      float primaryTime = 0;
       foreach (var transition in secondaryTransitions) {
-        transition.obj.Lerp(transition.transition, (nextUpdateTime - Time.time) / UPDATE_RATE);
+        // Send a timestamp that is relative to the primary's clock.
+        primaryTime = transition.transition.last.Timestamp + (nextUpdateTime - Time.time);
+        if (transition.obj.HasMoved()) {
+          // The object has been moved by the player, so free it from the lerp loop for this cycle.
+          secondaryTransitions.Remove(transition);
+          dirtyObjects.Add(transition.obj);
+        } else {
+          // Interpolate object between updates from the primary.
+          transition.obj.Lerp(transition.transition, (nextUpdateTime - Time.time) / UPDATE_RATE);
+        }
+      }
+
+      // Update the primary owner about every moved object.
+      if (dirtyObjects.Count > 0) {
+        logger.Log(dirtyObjects.Count + " secondary objects were dirty");
+        var builder = new FlatBufferBuilder(1024);
+        var worldState = localObjectStore.SerializeSecondaries(builder, dirtyObjects, primaryTime);
+        udpClient.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
       }
     }
   }
