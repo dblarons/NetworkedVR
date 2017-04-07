@@ -51,7 +51,7 @@ namespace Assets.Scripts {
         return true;
       }
 
-      return GetComponent<Rigidbody>().velocity.magnitude > 0.001;
+      return velocity.magnitude > 0.001;
     }
 
     public Offset<FlatNetworkedObject> Serialize(FlatBufferBuilder builder, float timestamp) {
@@ -76,7 +76,7 @@ namespace Assets.Scripts {
     public void Extrapolate(FlatNetworkedObject received, float timeDelta) {
       rigidbody.velocity = Serializer.DeserializeVector3(received.Velocity);
       var receivedPosition = Serializer.DeserializeVector3(received.Position);
-      transform.position = receivedPosition + rigidbody.velocity * timeDelta;
+      transform.position = receivedPosition + velocity * timeDelta;
       transform.rotation = Serializer.DeserializeQuaternion(received.Rotation);
     }
 
@@ -107,7 +107,10 @@ namespace Assets.Scripts {
     }
 
     public bool HasMoved() {
-      return storedTransform.IsEqual(new StoredTransform(position, rotation));
+      if (storedTransform != null) {
+        return !storedTransform.IsEqual(new StoredTransform(position, rotation));
+      }
+      return false;
     }
   }
 }

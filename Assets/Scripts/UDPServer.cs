@@ -68,5 +68,9 @@ namespace Assets.Scripts {
         s_server.SendMessage(om, all, NetDeliveryMethod.UnreliableSequenced, 0);
       }
     }
+
+    public void Shutdown() {
+      s_server.Shutdown("Application exiting");
+    }
   }
 }

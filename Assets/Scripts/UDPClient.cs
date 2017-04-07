@@ -65,5 +65,9 @@ namespace Assets.Scripts {
       s_client.SendMessage(message, NetDeliveryMethod.UnreliableSequenced);
       s_client.FlushSendQueue();
     }
+
+    public void Shutdown() {
+      s_client.Shutdown("Application exiting");
+    }
   }
 }

@@ -92,7 +92,8 @@ namespace Assets.Scripts {
     public Offset<FlatWorldState> SerializePrimaries(FlatBufferBuilder builder, float timestamp) {
       return Serialize(
         builder,
-        GetPrimaries().Where(primary => primary.HasUpdate()).ToList(),
+        // GetPrimaries().Where(primary => primary.HasUpdate()).ToList(),
+        GetPrimaries().ToList(),
         new List<NetworkedObject>(),
         timestamp
       );

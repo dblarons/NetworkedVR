@@ -48,5 +48,10 @@ namespace Assets.Scripts {
         udpServer.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
       }
     }
+
+    void OnApplicationQuit() {
+      logger.Log("Application quit: cleaning up resources");
+      udpServer.Shutdown();
+    }
   }
 }
