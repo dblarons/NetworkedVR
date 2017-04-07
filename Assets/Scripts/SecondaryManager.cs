@@ -71,15 +71,13 @@ namespace Assets.Scripts {
             .Where(trans => trans.transition != null).ToList();
       }
 
-      var dirtyObjects = new List<NetworkedObject>();
+      var dirtyObjects = new List<SecondaryTransition>();
       float primaryTime = 0;
       foreach (var transition in secondaryTransitions) {
         // Send a timestamp that is relative to the primary's clock.
         primaryTime = transition.transition.last.Timestamp + (nextUpdateTime - Time.time);
         if (transition.obj.HasMoved()) {
-          // The object has been moved by the player, so free it from the lerp loop for this cycle.
-          secondaryTransitions.Remove(transition);
-          dirtyObjects.Add(transition.obj);
+          dirtyObjects.Add(transition);
         } else {
           // Interpolate object between updates from the primary.
           transition.obj.Lerp(transition.transition, (nextUpdateTime - Time.time) / UPDATE_RATE);
@@ -88,9 +86,17 @@ namespace Assets.Scripts {
 
       // Update the primary owner about every moved object.
       if (dirtyObjects.Count > 0) {
+        // Remove objects that have been moved by the player from the lerp loop for this cycle.
+        foreach (var dirty in dirtyObjects) {
+          secondaryTransitions.Remove(dirty);
+        }
         logger.Log(dirtyObjects.Count + " secondary objects were dirty");
         var builder = new FlatBufferBuilder(1024);
-        var worldState = localObjectStore.SerializeSecondaries(builder, dirtyObjects, primaryTime);
+        var worldState = localObjectStore.SerializeSecondaries(
+          builder,
+          dirtyObjects.Select(dirty => dirty.obj).ToList(),
+          primaryTime
+        );
         udpClient.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
       }
     }
