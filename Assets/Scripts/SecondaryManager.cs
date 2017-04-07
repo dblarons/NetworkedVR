@@ -42,10 +42,12 @@ namespace Assets.Scripts {
       byte[] bytes = udpClient.Read();
       if (bytes != null) {
         FlatWorldState receivedWorldState = Serializer.BytesToFlatWorldState(bytes);
+        logger.Log("Received " + receivedWorldState.PrimariesLength + " primaries");
         for (var i = 0; i < receivedWorldState.PrimariesLength; i++) {
           var receivedPrimary = receivedWorldState.GetPrimaries(i);
           var secondary = localObjectStore.GetSecondary(receivedPrimary.Guid);
           if (secondary == null) {
+            logger.Log("Creating secondary copy for prefabId: " + (PrefabId)receivedPrimary.PrefabId);
             // Secondary copy does not exist yet. Create one and register it.
             localObjectStore.Instantiate(
               (PrefabId)receivedPrimary.PrefabId,
