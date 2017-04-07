@@ -107,10 +107,7 @@ namespace Assets.Scripts {
     }
 
     public bool HasMoved() {
-      if (storedTransform != null) {
-        return !storedTransform.IsEqual(new StoredTransform(position, rotation));
-      }
-      return false;
+      return storedTransform != null && !storedTransform.IsEqual(new StoredTransform(position, rotation));
     }
   }
 }

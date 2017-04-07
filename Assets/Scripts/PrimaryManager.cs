@@ -35,6 +35,7 @@ namespace Assets.Scripts {
           // secondary position.
           var receivedSecondary = receivedWorldState.GetSecondaries(i);
           var primary = localObjectStore.GetPrimary(receivedSecondary.Guid);
+          logger.Log("Extrapolated time was: " + (Time.time - receivedSecondary.Timestamp));
           primary.Extrapolate(receivedSecondary, Time.time - receivedSecondary.Timestamp);
         }
       }

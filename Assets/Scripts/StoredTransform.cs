@@ -11,8 +11,8 @@ namespace Assets.Scripts {
     }
 
     public bool IsEqual(StoredTransform other) {
-      if (Vector3.Distance(position, other.position) > 0.01 ||
-          Quaternion.Angle(rotation, other.rotation) > 0.01) {
+      if (Vector3.Distance(position, other.position) < 0.01 ||
+          Quaternion.Angle(rotation, other.rotation) < 0.01) {
         return true;
       }
       return false;
