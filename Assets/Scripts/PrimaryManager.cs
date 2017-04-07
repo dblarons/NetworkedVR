@@ -1,13 +1,11 @@
 ﻿using FlatBuffers;
 using NetworkingFBS;
 using UnityEngine;
-using VRTK;
 
 namespace Assets.Scripts {
   public class PrimaryManager : MonoBehaviour {
     static ILogger logger = Debug.logger;
 
-    public GameObject controller;
     public LocalObjectStore localObjectStore;
 
     UDPServer udpServer;
@@ -17,7 +15,6 @@ namespace Assets.Scripts {
     bool isInitialized = false;
 
     void Start() {
-      controller.GetComponent<VRTK_ControllerEvents>().TriggerPressed += DoTriggerPressed;
       udpServer = new UDPServer();
     }
 
@@ -50,10 +47,6 @@ namespace Assets.Scripts {
         var worldState = localObjectStore.SerializePrimaries(builder, Time.time);
         udpServer.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
       }
-    }
-
-    void DoTriggerPressed(object sender, ControllerInteractionEventArgs e) {
-      localObjectStore.Instantiate(PrefabId.SPHERE, controller.transform.position, controller.transform.rotation);
     }
   }
 }
