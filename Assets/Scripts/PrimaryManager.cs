@@ -1,12 +1,11 @@
 ﻿using FlatBuffers;
+using NetworkingFBS;
 using UnityEngine;
-using VRTK;
 
 namespace Assets.Scripts {
   public class PrimaryManager : MonoBehaviour {
     static ILogger logger = Debug.logger;
 
-    public GameObject controller;
     public LocalObjectStore localObjectStore;
 
     UDPServer udpServer;
@@ -16,7 +15,6 @@ namespace Assets.Scripts {
     bool isInitialized = false;
 
     void Start() {
-      controller.GetComponent<VRTK_ControllerEvents>().TriggerPressed += DoTriggerPressed;
       udpServer = new UDPServer();
     }
 
@@ -28,19 +26,33 @@ namespace Assets.Scripts {
         isInitialized = true;
       }
 
+      byte[] bytes = udpServer.Read();
+      if (bytes != null) {
+        FlatWorldState receivedWorldState = Serializer.BytesToFlatWorldState(bytes);
+        for (int i = 0; i < receivedWorldState.SecondariesLength; i++) {
+          logger.Log("Primary received and set " + receivedWorldState.SecondariesLength + " dirty objects from secondary");
+          // When a secondary update is received, immediately set the primary to the extrapolated
+          // secondary position.
+          var receivedSecondary = receivedWorldState.GetSecondaries(i);
+          var primary = localObjectStore.GetPrimary(receivedSecondary.Guid);
+          logger.Log("Extrapolated time was: " + (Time.time - receivedSecondary.Timestamp));
+          primary.Extrapolate(receivedSecondary, Time.time - receivedSecondary.Timestamp);
+        }
+      }
+
       if (nextSend < Time.time) {
         nextSend = Time.time + SEND_RATE;
-        logger.Log("LOG (server): Sending world update");
 
-        // TODO(dblarons): Dynamically allocate this size by asking the localObjectStore for it
+        // TODO(dblarons): Dynamically allocate this size by asking the localObjectStore for it.
         var builder = new FlatBufferBuilder(1024);
-        var worldState = localObjectStore.Serialize(builder);
+        var worldState = localObjectStore.SerializePrimaries(builder, Time.time);
         udpServer.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
       }
     }
 
-    void DoTriggerPressed(object sender, ControllerInteractionEventArgs e) {
-      localObjectStore.Instantiate(PrefabId.SPHERE, controller.transform.position, controller.transform.rotation);
+    void OnApplicationQuit() {
+      logger.Log("Application quit: cleaning up resources");
+      udpServer.Shutdown();
     }
   }
 }

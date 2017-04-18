@@ -64,32 +64,62 @@ namespace Assets.Scripts {
       obj.guid = guid;
     }
 
-    public NetworkedObject GetSecondary(string guid) {
-      NetworkedObject secondaryObject = null;
-      secondaryLookup.TryGetValue(guid, out secondaryObject);
-      if (secondaryObject == null) {
+    NetworkedObject GetObject(Dictionary<string, NetworkedObject> lookup, string guid) {
+      NetworkedObject obj = null;
+      lookup.TryGetValue(guid, out obj);
+      if (obj == null) {
         return null;
       }
-      return secondaryObject;
+      return obj;
+    }
+
+    public NetworkedObject GetSecondary(string guid) {
+      return GetObject(secondaryLookup, guid);
+    }
+
+    public NetworkedObject GetPrimary(string guid) {
+      return GetObject(primaryLookup, guid);
     }
 
     List<NetworkedObject> GetPrimaries() {
       return primaryLookup.Values.ToList();
     }
 
-    List<NetworkedObject> GetSecondaries() {
+    public List<NetworkedObject> GetSecondaries() {
       return secondaryLookup.Values.ToList();
     }
 
-    public Offset<FlatWorldState> Serialize(FlatBufferBuilder builder) {
+    public Offset<FlatWorldState> SerializePrimaries(FlatBufferBuilder builder, float timestamp) {
+      return Serialize(
+        builder,
+        // GetPrimaries().Where(primary => primary.HasUpdate()).ToList(),
+        GetPrimaries().ToList(),
+        new List<NetworkedObject>(),
+        timestamp
+      );
+    }
+
+    public Offset<FlatWorldState> SerializeSecondaries(FlatBufferBuilder builder,
+        List<NetworkedObject> secondaries, float timestamp) {
+      return Serialize(
+        builder,
+        new List<NetworkedObject>(),
+        secondaries,
+        timestamp
+      );
+    }
+
+    public Offset<FlatWorldState> Serialize(FlatBufferBuilder builder, List<NetworkedObject>
+        primaries, List<NetworkedObject> secondaries, float timestamp) {
+      Debug.Log("Sending " + primaries.Count + " primaries");
       var primariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
-        Serializer.SerializeNetworkedObjects(builder, GetPrimaries())
+        Serializer.SerializeNetworkedObjects(builder, primaries, timestamp)
       );
 
       var secondariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
-        Serializer.SerializeNetworkedObjects(builder, GetSecondaries())
+        Serializer.SerializeNetworkedObjects(builder, secondaries, timestamp)
       );
 
       FlatWorldState.StartFlatWorldState(builder);

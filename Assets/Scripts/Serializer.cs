@@ -23,10 +23,11 @@ namespace Assets.Scripts {
       return new Quaternion(flatQuaternion.X, flatQuaternion.Y, flatQuaternion.Z, flatQuaternion.W);
     }
 
-    public static Offset<FlatNetworkedObject>[] SerializeNetworkedObjects(FlatBufferBuilder builder, List<NetworkedObject> objs) {
+    public static Offset<FlatNetworkedObject>[] SerializeNetworkedObjects(FlatBufferBuilder builder, 
+        List<NetworkedObject> objs, float timestamp) {
       var offsets = new Offset<FlatNetworkedObject>[objs.Count];
       for (var i = 0; i < objs.Count; i++) {
-         offsets[i] = objs[i].Serialize(builder);
+         offsets[i] = objs[i].Serialize(builder, timestamp);
       }
       return offsets;
     }
