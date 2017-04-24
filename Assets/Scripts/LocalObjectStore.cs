@@ -111,7 +111,7 @@ namespace Assets.Scripts {
 
     public Offset<FlatWorldState> Serialize(FlatBufferBuilder builder, List<NetworkedObject>
         primaries, List<NetworkedObject> secondaries, float timestamp) {
-      Debug.Log("Sending " + primaries.Count + " primaries");
+      // Debug.Log("Sending " + primaries.Count + " primaries");
       var primariesOffset = FlatWorldState.CreatePrimariesVector(
         builder,
         Serializer.SerializeNetworkedObjects(builder, primaries, timestamp)

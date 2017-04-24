@@ -14,6 +14,12 @@ namespace Assets.Scripts {
     float nextSend = 0.0F;
     bool isInitialized = false;
 
+    // MEASUREMENTS
+    int m_frameCounter = 0;
+    float m_timeCounter = 0.0f;
+    float m_lastFramerate = 0.0f;
+    public float m_refreshTime = 10.0f;
+
     void Start() {
       udpServer = new UDPServer();
     }
@@ -47,6 +53,17 @@ namespace Assets.Scripts {
         var builder = new FlatBufferBuilder(1024);
         var worldState = localObjectStore.SerializePrimaries(builder, Time.time);
         udpServer.SendMessage(Serializer.FlatWorldStateToBytes(builder, worldState));
+      }
+
+      // MEASUREMENTS
+      if( m_timeCounter < m_refreshTime ) {
+        m_timeCounter += Time.deltaTime;
+        m_frameCounter++;
+      } else {
+        m_lastFramerate = (float)m_frameCounter/m_timeCounter;
+        m_frameCounter = 0;
+        m_timeCounter = 0.0f;
+        logger.Log("[MEASURE] Frame rate: " + m_lastFramerate);
       }
     }
 
