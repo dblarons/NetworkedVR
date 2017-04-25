@@ -1,7 +1,11 @@
 #!/bin/bash
 
-if [ -f ./registrar.db ]; then
-    rm registrar.db
+if [ -f /tmp/registrar/registrar.db ]; then
+    rm /tmp/registrar/registrar.db
+fi
+
+if [ ! -d /tmp/registrar/ ]; then
+    mkdir /tmp/registrar/
 fi
 
 python3 create.py

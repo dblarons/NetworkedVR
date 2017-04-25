@@ -1,5 +1,5 @@
 from peewee import *
 
-DATABASE = 'registrar.db'
+DATABASE = '/tmp/registrar/registrar.db'
 
 database = SqliteDatabase(DATABASE)

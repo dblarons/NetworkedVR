@@ -1,11 +1,3 @@
-param (
-    [switch]$setup = $false
-)
-
-if (!($setup)) {
-    return
-}
-
 If (Test-Path .\Assets\packages) {
     Remove-Item -Recurse -Force .\Assets\packages
 }
@@ -38,3 +30,11 @@ foreach ($dll in $badDlls) {
 }
 
 .\scripts\flatc.exe --csharp --gen-onefile -o Assets\Scripts\flatbuffers\compiled Assets\Scripts\flatbuffers\schemas\networking.fbs
+.\scripts\flatc.exe --csharp --gen-onefile -o Assets\Scripts\flatbuffers\compiled `
+    registrar\flatbuffers\client.fbs `
+    registrar\flatbuffers\command.fbs `
+    registrar\flatbuffers\connect.fbs `
+    registrar\flatbuffers\create.fbs `
+    registrar\flatbuffers\join.fbs `
+    registrar\flatbuffers\list.fbs `
+    registrar\flatbuffers\room.fbs
