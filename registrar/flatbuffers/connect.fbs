@@ -1,0 +1,7 @@
+include "client.fbs";
+
+namespace Registrar;
+
+table Connect {
+  client:Client;
+}

@@ -1,0 +1,13 @@
+include "client.fbs";
+include "room.fbs";
+
+namespace Registrar;
+
+table Create {
+  // request
+  name:string;
+  client:Client;
+
+  // response
+  room:Room;
+}

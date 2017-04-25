@@ -1,0 +1,14 @@
+include "client.fbs";
+include "room.fbs";
+
+namespace Registrar;
+
+table Join {
+  // request
+  guid:string;
+  client:Client;
+
+  // response
+  room:Room;
+  clients:[Client];
+}

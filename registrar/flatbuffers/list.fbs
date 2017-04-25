@@ -1,0 +1,8 @@
+include "room.fbs";
+
+namespace Registrar;
+
+table List {
+  // response
+  rooms:[Room];
+}

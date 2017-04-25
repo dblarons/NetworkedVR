@@ -1,0 +1,9 @@
+namespace Registrar;
+
+table Client {
+  id:string;
+  ip:string;
+  port:int;
+}
+
+root_type Client;
