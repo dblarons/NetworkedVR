@@ -4,6 +4,7 @@ using Assets.Scripts.Buffering;
 using System.Collections.Generic;
 using System.Linq;
 using FlatBuffers;
+using VRTK;
 
 namespace Assets.Scripts {
   public class SecondaryTransition {
@@ -30,6 +31,12 @@ namespace Assets.Scripts {
     float nextUpdateTime = 0.0F;
 
     void Start() {
+      var registrar = new RegistrarClient();
+      List<Registrar.Room> rooms = registrar.List();
+      logger.Log(rooms[0].Guid);
+      List<Registrar.Client> clients = registrar.Join(rooms[0].Guid, "First client", "127.0.0.1", 5556);
+      logger.Log(clients[0].Id);
+
       udpClient = new UDPClient();
       udpClient.Connect();
 
