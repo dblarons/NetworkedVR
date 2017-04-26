@@ -25,11 +25,11 @@ context = zmq.Context()
 
 # Create the response socket.
 rep_socket = context.socket(zmq.REP)
-rep_socket.bind('tcp://*:%s' % REP_PORT)
+rep_socket.bind('tcp://0.0.0.0:%s' % REP_PORT)
 
 # Create the publisher socket.
 pub_socket = context.socket(zmq.PUB)
-pub_socket.bind('tcp://*:%s' % SUB_PORT)
+pub_socket.bind('tcp://0.0.0.0:%s' % SUB_PORT)
 
 def build_command(builder, message_type, message):
     registrar.Registrar.Command.CommandStart(builder)

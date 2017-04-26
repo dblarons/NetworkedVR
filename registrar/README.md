@@ -6,7 +6,7 @@ Final project for CS283 Networks
 `python3 -m venv ~/ENV/networks-project`
 `source ~/ENV/networks-project/bin/activate`
 
-## Configure database
+## Configure database and compile flatbuffers
 
 `./setup.sh`
 
